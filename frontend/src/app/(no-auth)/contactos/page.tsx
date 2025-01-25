@@ -136,7 +136,7 @@ const EmployeeCell = ({
       <Box w="100%" mb="xl">
         <motion.div whileHover={{ scale: 1.05, boxShadow: "var(--mantine-shadow-xl)" }} transition={{ type: "spring" }}>
           <Box pos="relative" w="100%" style={{ aspectRatio: "1/1", borderRadius: "var(--mantine-radius-lg)" }} mb="lg">
-            <NextImage src={imageUrl} alt={alt} sizes={`(max-width: ${theme.breakpoints.xs}) 100vw, (max-width: ${theme.breakpoints.md}) 50vw, 25vw`} fill style={{borderRadius: "10px"}} />
+            <NextImage src={imageUrl} alt={alt} sizes={`(max-width: ${theme.breakpoints.xs}) 100vw, (max-width: ${theme.breakpoints.md}) 50vw, 25vw`} fill style={{ borderRadius: "10px" }} />
           </Box>
         </motion.div>
         <Text fz="xl" fw="bold">
@@ -167,70 +167,122 @@ const EmployeeCell = ({
 };
 
 export default function Contactos() {
+  const theme = useMantineTheme();
+
   return (
-  <Container
-    bg="var(--mantine-color-body)"
-    size="xl"
-    px={0}
-    py={{
-      base: "calc(var(--mantine-spacing-lg) * 4)",
-      xs: "calc(var(--mantine-spacing-lg) * 5)",
-      lg: "calc(var(--mantine-spacing-lg) * 6)",
-    }}
-  >
     <Container
-      size="lg"
-      px={{
-        base: "xl",
-        lg: 0,
+      bg="var(--mantine-color-body)"
+      size="xl"
+      px={0}
+      py={{
+        base: "calc(var(--mantine-spacing-lg) * 4)",
+        xs: "calc(var(--mantine-spacing-lg) * 5)",
+        lg: "calc(var(--mantine-spacing-lg) * 6)",
       }}
     >
-      <Grid
-        gutter={{
-          base: 0,
-          lg: "calc(var(--mantine-spacing-xl) * 2)",
+      <Container
+        size="lg"
+        px={{
+          base: "xl",
+          lg: 0,
         }}
-        align="end"
       >
-        <Grid.Col span={{ base: 12, lg: 7 }}>
+        <Grid
+          gutter={{
+            base: 0,
+            lg: "calc(var(--mantine-spacing-xl) * 2)",
+          }}
+          align="end"
+        >
+          <Grid.Col span={{ base: 12, lg: 7 }}>
+            <motion.div initial={{ opacity: 0.0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }} viewport={{ once: true }}>
+              <JumboTitle
+                order={2}
+                fz="md"
+                style={{ textWrap: "balance" }}
+                pr={{
+                  base: 0,
+                  xs: "calc(var(--mantine-spacing-xl) * 4)",
+                }}
+                mb={{
+                  base: "xs",
+                  lg: 0,
+                }}
+              >
+                A equipa
+              </JumboTitle>
+            </motion.div>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, lg: 5 }}>
+            <Text c="dimmed" fz="xl" component={motion.div} initial={{ opacity: 0.0, y: 40 }} transition={{ duration: 0.8, ease: "easeInOut" }} viewport={{ once: true }} whileInView={{ opacity: 1, y: 0 }}>
+              A nossa fisolofia é servir o povo xpto xpto xpto as asd asdad ads asdasdasdasd asdasd as.
+            </Text>
+          </Grid.Col>
+        </Grid>
+        <Box
+          mt={{
+            base: "calc(var(--mantine-spacing-xl) * 3)",
+            lg: "calc(var(--mantine-spacing-xl) * 5)",
+          }}
+        >
+          <Grid gutter="xl">
+            {EMPLOYEES.map((employee, index) => (
+              <Grid.Col span={{ base: 12, xs: 6, md: 3 }} key={employee.name}>
+                <EmployeeCell key={employee.name} {...employee} index={index} />
+              </Grid.Col>
+            ))}
+          </Grid>
+        </Box>
+
+        <Box mt="lg" mb="lg">
           <motion.div initial={{ opacity: 0.0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }} viewport={{ once: true }}>
             <JumboTitle
-              order={2}
+              order={4}
               fz="md"
               style={{ textWrap: "balance" }}
               pr={{
                 base: 0,
                 xs: "calc(var(--mantine-spacing-xl) * 4)",
               }}
-              mb={{
-                base: "xs",
-                lg: 0,
-              }}
+              mb={"lg"}
             >
-              Meet the team
+              Localização
             </JumboTitle>
           </motion.div>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 5 }}>
-          <Text c="dimmed" fz="xl" component={motion.div} initial={{ opacity: 0.0, y: 40 }} transition={{ duration: 0.8, ease: "easeInOut" }} viewport={{ once: true }} whileInView={{ opacity: 1, y: 0 }}>
-            Our philosophy is simple: hire great people and give them the tools to do great work.
-          </Text>
-        </Grid.Col>
-      </Grid>
-      <Box
-        mt={{
-          base: "calc(var(--mantine-spacing-xl) * 3)",
-          lg: "calc(var(--mantine-spacing-xl) * 5)",
-        }}
-      >
-        <Grid gutter="xl">
-          {EMPLOYEES.map((employee, index) => (
-            <Grid.Col span={{ base: 12, xs: 6, md: 3 }} key={employee.name}>
-              <EmployeeCell key={employee.name} {...employee} index={index} />
+          {/* Grid Container */}
+          <Grid>
+            <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+              <Text fz="xl" fw="bold" ta={"center"} className={classes.marginTop}>
+                Antiga Escola de Beire
+              </Text>
+              <Text fz="lg" ta={"center"}>
+                Rua da Gândara 164 <br />
+                4520-606 São João de Ver <br />
+                Portugal
+              </Text>
             </Grid.Col>
-          ))}
-        </Grid>
-      </Box>
+            <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+              <motion.div whileHover={{ scale: 1.05, boxShadow: "var(--mantine-shadow-xl)" }} transition={{ type: "spring" }}>
+                <Box pos="relative" w="100%" style={{ aspectRatio: "1/1", borderRadius: "var(--mantine-radius-lg)" }} mb="lg">
+                  <NextImage
+                    src={"/map.png"}
+                    alt={"Maps"}
+                    sizes={`(max-width: ${theme.breakpoints.xs}) 100vw, (max-width: ${theme.breakpoints.md}) 50vw, 25vw`}
+                    fill
+                    style={{ borderRadius: "10px", cursor: "pointer" }}
+                    onClick={() =>
+                      window.open(
+                        "https://www.google.com/maps/place/ALPCeS+-+Associa%C3%A7%C3%A3o+Ludopedag%C3%B3gica+Cultural+e+Social/@40.9488707,-8.5671607,16z/data=!4m6!3m5!1s0xd238163b7edd1ad:0x5cbce55b80672008!8m2!3d40.9475522!4d-8.5651619!16s%2Fg%2F11wjkn3vmg?entry=ttu&g_ep=EgoyMDI1MDEyMi4wIKXMDSoASAFQAw%3D%3D",
+                        "_blank"
+                      )
+                    }
+                  />
+                </Box>
+              </motion.div>
+            </Grid.Col>
+          </Grid>
+        </Box>
+      </Container>
     </Container>
-  </Container>)
-};
+  );
+}
