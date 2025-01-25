@@ -2,3 +2,17 @@
  /*  background-color: var(--mantine-color-dark-8); */
 }
 
+.divImage{
+    position: relative;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    
+    @media (max-width: $mantine-breakpoint-md) {
+        height: 400px;
+        max-width: 400px;
+    }
+}
+.divImage img{
+    border-radius: 8px;
+}

@@ -83,16 +83,16 @@ export const HeaderMenu = () => {
             <Image
               src={"/alpces.png"}
               alt="Logo"
-              width={50}
-              height={50}
+              width={34}
+              height={40}
               className={classes.logo}
-              //onClick={() => router.push(routes.home.url)}
+              //onClick={() => router.push(routes.Inicio.url)}
             />
           </Flex>
 
           <Group h="100%" gap={0} visibleFrom="sm">
             <a href="#" className={classes.link}>
-              Home
+              Inicio
             </a>
             <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
               <HoverCard.Target>
@@ -136,10 +136,10 @@ export const HeaderMenu = () => {
               </HoverCard.Dropdown>
             </HoverCard>
             <a href="#" className={classes.link}>
-              Learn
+              Notícias
             </a>
             <a href="#" className={classes.link}>
-              Academy
+              Agenda
             </a>
           </Group>
 
@@ -158,7 +158,7 @@ export const HeaderMenu = () => {
           <Divider my="sm" />
 
           <a href="#" className={classes.link}>
-            Home
+            Inicio
           </a>
           <UnstyledButton className={classes.link} onClick={toggleLinks}>
             <Center inline>
@@ -170,10 +170,10 @@ export const HeaderMenu = () => {
           </UnstyledButton>
           <Collapse in={linksOpened}>{links}</Collapse>
           <a href="#" className={classes.link}>
-            Learn
+            Notícias
           </a>
           <a href="#" className={classes.link}>
-            Academy
+            Agenda
           </a>
 
           <Divider my="sm" />

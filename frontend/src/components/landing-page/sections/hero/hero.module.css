@@ -1,5 +1,12 @@
 .background{
- /*  background-color: var(--mantine-color-dark-8); */
+  background-color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-8));
+}
+
+.heroImage{
+  width: 120%;
+  @media (max-width: $mantine-breakpoint-md) {
+    width: 100%;
+  }
 }
 
 .inner {
@@ -50,4 +57,20 @@
   background-color: var(--mantine-color-blue-light);
   border-radius: var(--mantine-radius-sm);
   padding: rem(4px) rem(12px);
+}
+
+.SvgWavesUp{
+  width: 100%;
+  height: calc(3rem);
+  display: block;
+  background-color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-8));
+  fill: light-dark(var(--mantine-color-default), var(--mantine-color-dark-7));
+}
+
+.SvgWavesDown{
+  width: 100%;
+  height: calc(3rem);
+  display: block;
+  background-color: light-dark(var(--mantine-color-default), var(--mantine-color-dark-7));
+  fill: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-8));
 }

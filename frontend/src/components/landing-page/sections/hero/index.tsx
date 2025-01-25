@@ -57,10 +57,15 @@ export function Hero() {
           </Grid.Col>
           <Grid.Col span={{ md: 6, sm: 12, xs: 12, lg: 4 }}>
             <Flex align={"center"}>
-              <Image src="/astronaut/2.png" alt="Wait" style={{ marginLeft: "auto", marginRight: "auto", width: "120%" }} />
+              <Image src="/astronaut/2.png" alt="Wait" style={{ marginLeft: "auto", marginRight: "auto" }} className={classes.heroImage} />
             </Flex>
           </Grid.Col>
         </Grid>
+      </div>
+      <div>
+        <svg className={classes.SvgWavesDown} preserveAspectRatio="none" viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg">
+          <path d="M321.39 56.44c58-10.79 114.16-30.13 172-41.86 82.39-16.72 168.19-17.73 250.45-.39C823.78 31 906.67 72 985.66 92.83c70.05 18.48 146.53 26.09 214.34 3V0H0v27.35a600.21 600.21 0 00321.39 29.09z"></path>
+        </svg>
       </div>
     </div>
   );

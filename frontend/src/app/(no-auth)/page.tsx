@@ -29,8 +29,8 @@ export default function Home() {
       <title>Ludoteca</title>
       <AffixComponent />
       <Hero />
+      <CarouselSection />
       <FeaturesCards />
-      {/* <CarouselSection /> */}
       <FaqSimple />
       <Footer />
     </>
