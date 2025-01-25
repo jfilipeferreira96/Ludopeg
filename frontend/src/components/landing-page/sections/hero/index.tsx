@@ -4,6 +4,7 @@ import classes from "./hero.module.css";
 import Link from "next/link";
 import { routes } from "@/config/routes";
 import ThreeDButton from "@/components/3dbutton";
+import { motion } from "framer-motion";
 
 export function Hero() {
   return (
@@ -12,53 +13,67 @@ export function Hero() {
         <Grid justify="center">
           <Grid.Col span={{ md: 6, sm: 12, xs: 12, lg: 6 }}>
             <div className={classes.content}>
-              <h1 className={classes.title}>
+              {/* Adicionando animação ao título */}
+              <motion.h1 className={classes.title} initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                 Level Up {""}
                 <Text component="span" variant="gradient" gradient={{ from: "blue", to: "cyan" }} inherit>
                   Learning Experience
                 </Text>{" "}
                 with Engaging Challenges
-              </h1>
-              <Text c="dimmed" mt="md">
-                {"Enhance your students' educational journey by crafting interactive quizzes and offering special prizes. Foster friendly competition among peers to inspire excellence in higher education."}
-              </Text>
+              </motion.h1>
 
-              <List
-                mt={30}
-                spacing="sm"
-                size="sm"
-                icon={
-                  <ThemeIcon size={20} radius="xl">
-                    <IconCheck style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
-                  </ThemeIcon>
-                }
-              >
-                <List.Item>
-                  <b>Competition</b> {"- Compete with your peers and see who's the top performer."}
-                </List.Item>
-                <List.Item>
-                  <b>Motivation</b> {"- Stay engaged and motivated to excel in your higher education journey."}
-                </List.Item>
-              </List>
+              {/* Animação para o texto */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.5 }}>
+                <Text c="dimmed" mt="md">
+                  {"Enhance your students' educational journey by crafting interactive quizzes and offering special prizes. Foster friendly competition among peers to inspire excellence in higher education."}
+                </Text>
+              </motion.div>
 
-              <Group mt={30}>
-                <Link href={routes.signin.url} className={classes.control}>
-                  <ThreeDButton rounded color="blue">
-                    Get started
-                  </ThreeDButton>
-                </Link>
-                <Link href={"https://github.com/jfilipeferreira96/ProjectThesis"} target="_blank" className={classes.control}>
-                  <ThreeDButton rounded color="gray">
-                    Source code
-                  </ThreeDButton>
-                </Link>
-              </Group>
+              {/* Animação para a lista */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.8 }}>
+                <List
+                  mt={30}
+                  spacing="sm"
+                  size="sm"
+                  icon={
+                    <ThemeIcon size={20} radius="xl">
+                      <IconCheck style={{ width: rem(12), height: rem(12) }} stroke={1.5} />
+                    </ThemeIcon>
+                  }
+                >
+                  <List.Item>
+                    <b>Competition</b> {"- Compete with your peers and see who's the top performer."}
+                  </List.Item>
+                  <List.Item>
+                    <b>Motivation</b> {"- Stay engaged and motivated to excel in your higher education journey."}
+                  </List.Item>
+                </List>
+              </motion.div>
+
+              {/* Animação para os botões */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1.2 }}>
+                <Group mt={30}>
+                  <Link href={routes.signin.url} className={classes.control}>
+                    <ThreeDButton rounded color="blue">
+                      Get started
+                    </ThreeDButton>
+                  </Link>
+                  <Link href={"https://github.com/jfilipeferreira96/ProjectThesis"} target="_blank" className={classes.control}>
+                    <ThreeDButton rounded color="gray">
+                      Source code
+                    </ThreeDButton>
+                  </Link>
+                </Group>
+              </motion.div>
             </div>
           </Grid.Col>
           <Grid.Col span={{ md: 6, sm: 12, xs: 12, lg: 4 }}>
-            <Flex align={"center"}>
-              <Image src="/astronaut/2.png" alt="Wait" style={{ marginLeft: "auto", marginRight: "auto" }} className={classes.heroImage} />
-            </Flex>
+            {/* Adicionando animação à imagem */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1 }}>
+              <Flex align={"center"}>
+                <Image src="/astronaut/2.png" alt="Wait" style={{ marginLeft: "auto", marginRight: "auto" }} className={classes.heroImage} />
+              </Flex>
+            </motion.div>
           </Grid.Col>
         </Grid>
       </div>
