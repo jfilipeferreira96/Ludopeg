@@ -6,16 +6,17 @@ import Link from "next/link";
 import Image from "next/image"; 
 
 const links = [
-  { label: "Docs", link: "/docs/" },
-  { label: "GitHub", link: "https://github.com/helix-medical" },
+  { label: "Contactos", link: "#" },
+  { label: "Newsletter", link: "#" },
 ];
 
 const Footer = () => {
-  const items = links.map((link) => (
-    <Anchor<"a"> color="dimmed" key={link.label} href={link.link} size="sm">
-      {link.label}
-    </Anchor>
-  ));
+   const items = links.map((link) => (
+     <Anchor c="dimmed" key={link.label} href={link.link} lh={1} onClick={(event) => event.preventDefault()} size="sm">
+       {link.label}
+     </Anchor>
+   ));
+
 
   return (
     <div className={classes.footer}>
@@ -23,9 +24,11 @@ const Footer = () => {
         <Flex align={"center"}>
           <Image src="/alpces.png" alt="Logo" width={75} height={75} />
         </Flex>
-        <Text size="sm" color="dimmed">
+        {/* <Text size="sm" color="dimmed">
           © 2025 Ludoteca
-        </Text>
+        </Text> */}
+        <Group className={classes.links}>{items}</Group>
+
         {/* <Group className={classes.links}>{items}</Group> */}
         <Group gap="xs" justify="flex-end" wrap="nowrap">
           <Link href={"https://www.facebook.com/associacaoludonautas"} target="_blank">
