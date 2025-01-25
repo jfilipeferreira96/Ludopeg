@@ -1,0 +1,59 @@
+.title {
+  font-size: rem(34px);
+  font-weight: 900;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    font-size: rem(24px);
+  }
+}
+
+.background{
+  background-color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-8));
+}
+
+.description {
+  max-width: rem(600px);
+  margin: auto;
+
+  &::after {
+    content: '';
+    display: block;
+    background-color: var(--mantine-color-blue-filled);
+    width: rem(45px);
+    height: rem(2px);
+    margin-top: var(--mantine-spacing-sm);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.card {
+  border: rem(1px) solid light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+}
+
+.cardTitle {
+  &::after {
+    content: '';
+    display: block;
+    background-color: var(--mantine-color-blue-filled);
+    width: rem(45px);
+    height: rem(2px);
+    margin-top: var(--mantine-spacing-sm);
+  }
+}
+
+.SvgWavesUp{
+  width: 100%;
+  height: calc(3rem);
+  display: block;
+  background-color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-8));
+  fill: light-dark(var(--mantine-color-default), var(--mantine-color-dark-7));
+}
+
+.SvgWavesDown{
+  width: 100%;
+  height: calc(3rem);
+  display: block;
+  background-color: light-dark(var(--mantine-color-default), var(--mantine-color-dark-7));
+  fill: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-8));
+}
