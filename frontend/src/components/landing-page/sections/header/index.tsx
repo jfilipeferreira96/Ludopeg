@@ -79,7 +79,7 @@ export const HeaderMenu = () => {
     <Box>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
-          <Flex align={"center"}>
+          <Flex align={"center"} className={classes.minWidth}>
             <Image
               src={"/alpces.png"}
               alt="Logo"

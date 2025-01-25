@@ -39,6 +39,14 @@
   }
 }
 
+.minWidth{
+  min-width: 150px;
+
+  @media (max-width: 776px) {
+    min-width: 20px;
+  }
+}
+
 .subLink {
   width: 100%;
   padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
