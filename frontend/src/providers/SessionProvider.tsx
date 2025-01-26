@@ -40,7 +40,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
     localStorage.setItem("accessToken", accessToken);
 
     if (redirect) {
-      router.push(routes.home.url);
+      router.push(routes.inicio.url);
     }
   };
 
@@ -49,7 +49,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
     localStorage.removeItem("accessToken");
 
     if (redirect) {
-      router.push(routes.signin.url);
+      router.push(routes.entrada.url);
     }
   };
 

@@ -3,7 +3,8 @@ import ThreeDButton from "@/components/3dbutton";
 import SetAvatar from "@/components/avatar";
 import { routes } from "@/config/routes";
 import { useSession } from "@/providers/SessionProvider";
-import { register, RegisterData, UserType } from "@/services/auth.service";
+import { register, RegisterData } from "@/services/auth.service";
+import { UserType } from "@/types/user";
 import { TextInput, PasswordInput, Checkbox, Anchor, Paper, Title, Text, Container, Group, Button, Input, Center, Radio, CheckIcon, CheckboxGroup } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -105,7 +106,7 @@ export default function EditUserModal() {
 
         <Text c="dimmed" size="sm" ta="center" mt={5}>
           Already have an account?
-          <Anchor size="sm" component="a" ml={2} onClick={() => router.push(routes.signin.url)}>
+          <Anchor size="sm" component="a" ml={2} onClick={() => router.push(routes.entrada.url)}>
             Sign In
           </Anchor>
         </Text>

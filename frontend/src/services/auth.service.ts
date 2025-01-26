@@ -16,38 +16,58 @@ export interface RegisterData {
   studentId?: number | string;
 }
 
+
 export const login = async (data: LoginData) => {
-  try
-  {
+  try {
     const response = await api.post(endpoints.loginRoute, data);
 
     return response.data;
-  }
-  catch (error)
-  {
+  } catch (error) {
     throw error;
   }
 };
 
 export const register = async (data: RegisterData) => {
-  try
-  {
+  try {
     const response = await api.post(endpoints.registerRoute, data);
     return response.data;
-  }
-  catch (error)
-  {
+  } catch (error) {
     throw error;
   }
 };
 
-export const updateAccount = async (userId: number, data: Partial<User>) => {
-  try
-  {
-    const response = await api.put(`${endpoints.updateAccount}/${userId}`, data);
+export interface ResetPasswordData {
+  token: string;
+  newPassword: string;
+}
+
+export const resetPassword = async (data: ResetPasswordData) => {
+  try {
+    const response = await api.post(endpoints.resetPassword, data);
     return response.data;
-  } catch (error)
-  {
+  } catch (error) {
+    throw error;
+  }
+};
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export const forgotPassword = async (data: ForgotPasswordData) => {
+  try {
+    const response = await api.post(endpoints.forgotPassword, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const checkToken = async (token: string) => {
+  try {
+    const response = await api.get(`${endpoints.checkToken}/${token}`);
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };

@@ -53,7 +53,7 @@ export function Hero() {
               {/* Animação para os botões */}
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1.2 }}>
                 <Group mt={30}>
-                  <Link href={routes.signin.url} className={classes.control}>
+                  <Link href={routes.entrada.url} className={classes.control}>
                     <ThreeDButton rounded color="blue">
                       Get started
                     </ThreeDButton>

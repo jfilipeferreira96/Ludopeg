@@ -6,49 +6,37 @@ export const endpoints = {
   /*################## Auth #############################*/
   loginRoute: `/api/auth/login`,
   registerRoute: `/api/auth/register`,
+  resetPassword: `/api/auth/reset-password`,
+  forgotPassword: `/api/auth/forgotpassword`,
+  checkToken: `/api/auth/checktoken`,
   logoutRoute: `/api/auth/logout`,
+  /*################## Users #############################*/
+  cardsRoute: `/api/auth/users/cards/`,
+  getAllUsers: `/api/auth/users`,
+  getSingleUser: `/api/auth/users`,
+  registerUserManually: `/api/auth/users`,
+  updateUser: `/api/auth/users`,
+  deleteUser: `/api/auth/users`,
   updateAccount: `/api/auth/account`,
-  /*################## Challenges #############################*/
-  createChallengeRoute: `/api/challenges/create`,
-  editChallengeRoute: `/api/challenges/edit`,
-  getChallengesByUserId: `/api/challenges`,
-  getSingleChallenge: `/api/challenges/`,
-  joinChallenge: `/api/challenges/join`,
-  getAllChallengeQuizzes: `/api/challenges/quizzes/`,
-  addAdminRoute: `/api/challenges/admin/add`,
-  removeAdminRoute: `/api/challenges/admin/remove`,
-  /*################## Quizz #############################*/
-  createQuizzRoute: `/api/quizz/create`,
-  editQuizzRoute: `/api/quizz/edit`,
-  editQuizzStatusRoute: `/api/quizz/editStatus`,
-  deleteQuizzRoute: `/api/quizz/delete`,
-  getSingleQuizz: `/api/quizz/`,
-  saveQuizAnswerRoute: `/api/quizz/answer`,
-  getAnswers: `/api/quizz/answers/`,
-  editQuizzPontuationRoute: `/api/quizz/updateUserPontuation/`,
-  downloadFile: `/api/quizz/download/`,
 };
 
 export const routes = {
   landingpage: {
     url: "/",
   },
-  signin: {
-    url: "/signin",
+  entrada: {
+    url: "/entrada",
   },
-  register: {
-    url: "/register",
+  registo: {
+    url: "/registo",
   },
-  account: {
-    url: "/account",
+  conta: {
+    url: "/conta",
   },
-  home: {
-    url: "/home",
+  inicio: {
+    url: "/inicio",
   },
-  challenge: {
-    url: "/challenge",
-    create: {
-      url: "/challenge/create",
-    },
+  forgotpassword: {
+    url: "/forgot-password",
   },
 };

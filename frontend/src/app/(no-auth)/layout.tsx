@@ -14,8 +14,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   const [state, setState] = useState<"loading" | "success">("loading");
 
   useEffect(() => {
-    if (user && (pathname === routes.register.url || pathname === routes.signin.url)) {
-      router.push(routes.home.url);
+    if (user && (pathname === routes.registo.url || pathname === routes.entrada.url)) {
+      router.push(routes.inicio.url);
       return;
     }
     if (!user || pathname === routes.landingpage.url) {
