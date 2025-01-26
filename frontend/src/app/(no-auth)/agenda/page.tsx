@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Text, Group, Stack, Container, Title, Flex, Pagination, Anchor } from "@mantine/core";
+import { Card, Text, Image, Group, Stack, Container, Title, Flex, Pagination, Anchor, Grid } from "@mantine/core";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ type EventItem = {
   location_name: string;
 };
 
-const elementsPerPage = 5;
+const elementsPerPage = 100;
 
 export default function AgendaPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -55,35 +55,41 @@ export default function AgendaPage() {
       <Title ta="center" mb="lg" order={1}>
         Agenda de Eventos
       </Title>
-
-      <Stack>
-        {displayedEvents.map((event, index) => (
-          <motion.div key={event.event_id} initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: index * 0.2 }}>
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
-              <Group>
-                <Stack>
-                  <Text size="lg" w={500}>
-                    {event.title}
-                  </Text>
-                  <Text size="sm" c="dimmed">
-                    {event.event_date} - 
-                    <Anchor
-                      size="sm"
-                      component="a"
-                      ml={2}
-                      onClick={() => router.push(`/location/${event.location_id}`)}
-                    >
-                      {event.location_name}
-                    </Anchor>
-                  </Text>
-                </Stack>
-              </Group>
-            </Card>
+      <Grid>
+        <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+         
+          <Stack>
+            {displayedEvents.map((event, index) => (
+              <motion.div key={event.event_id} initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: index * 0.2 }}>
+                <Card shadow="sm" padding="xs" radius="md" withBorder>
+                  <Group>
+                    <Stack>
+                      <Text size="md" w={500}>
+                        {event.title}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {event.event_date} -
+                        <Anchor size="sm" component="a" ml={2} onClick={() => router.push(`/location/${event.location_id}`)}>
+                          {event.location_name}
+                        </Anchor>
+                      </Text>
+                    </Stack>
+                  </Group>
+                </Card>
+              </motion.div>
+            ))}
+          </Stack>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 1 * 0.2 }}>
+            <Flex align={"center"}>
+              <Image src="/astronaut/5.png" alt="Astronaut Agenda" style={{ marginLeft: "auto", marginRight: "auto" }} /* className={classes.heroImage} */ />
+            </Flex>
           </motion.div>
-        ))}
-      </Stack>
+        </Grid.Col>
+      </Grid>
 
-      {events.length > 0 && (
+      {/* {events.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: displayedEvents.length * 0.2 }}>
           <Flex justify="space-between" mt="lg" align="center">
             <Text size="sm">
@@ -92,7 +98,7 @@ export default function AgendaPage() {
             <Pagination total={Math.ceil(totalEvents / elementsPerPage)} onChange={handlePageChange} />
           </Flex>
         </motion.div>
-      )}
+      )} */}
     </Container>
   );
 }
