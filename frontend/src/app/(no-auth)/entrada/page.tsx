@@ -71,8 +71,8 @@ export default function IniciarSessao() {
       <title>Iniciar Sessão</title>
 
       <form onSubmit={form.onSubmit((values) => onSubmitHandler(values))}>
-        <Flex align={"center"} justify={"center"} mt={100}>
-          <Image src={"/alcpes.png"} alt="Logo" width={120} height={90} />
+        <Flex align={"center"} justify={"center"} mt={100} mb={20}>
+          <Image src={"/alpces.png"} alt="Logo" width={100} height={100} />
         </Flex>
 
         <Title ta="center" size="h1" className="specialheader">
@@ -81,9 +81,9 @@ export default function IniciarSessao() {
 
         <Text c="dimmed" size="sm" ta="center" mt={5}>
           Ainda não tem uma conta?
-          <UnstyledButton size="sm" onClick={() => router.push(routes.registo.url)} className="logbtn">
+          <Anchor size="sm" component="a" ml={2} onClick={() => router.push(routes.registo.url)}>
             Criar conta
-          </UnstyledButton>
+          </Anchor>
         </Text>
 
         <StyledPaper withBorder shadow="md" p={30} mt={30} radius="md">

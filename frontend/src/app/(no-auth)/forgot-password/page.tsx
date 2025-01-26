@@ -41,7 +41,6 @@ export default function EsqueceuPassword() {
         setTimeout(() => {
           router.push(routes.entrada.url);
         }, 4000);
-        
       } else {
         notifications.show({
           message: response.message,
@@ -72,8 +71,8 @@ export default function EsqueceuPassword() {
         <title>Esqueceu a Palavra-passe</title>
 
         <form onSubmit={form.onSubmit((values) => onSubmitHandler(values))}>
-          <Flex align={"center"} justify={"center"} mt={100}>
-            <Image src={"/alcpes.png"} alt="Logo" width={120} height={90} />
+          <Flex align={"center"} justify={"center"} mt={100} mb={20}>
+            <Image src={"/alpces.png"} alt="Logo" width={100} height={100} />
           </Flex>
 
           <Title ta="center" size="h2" className="specialheader">

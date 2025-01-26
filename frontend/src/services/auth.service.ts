@@ -8,14 +8,18 @@ export interface LoginData {
 }
 
 export interface RegisterData {
+  username: string;
   email: string;
-  fullname: string;
-  password: string;
-  avatar: string;
-  type: UserType;
-  studentId?: number | string;
+  fullname: string; 
+  password: string; 
+  avatar: string; 
+  phone?: string; 
+  birthdate?: string; 
+  user_type: "admin" | "player"; 
+  is_subscribed_to_newsletter?: boolean;
+  has_fees_paid?: boolean; 
+  fee_expiration_date?: string | null; 
 }
-
 
 export const login = async (data: LoginData) => {
   try {

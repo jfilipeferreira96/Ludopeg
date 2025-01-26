@@ -9,8 +9,8 @@ export interface User {
   id: string;
   email: string;
   user_type: UserType | string;
-  first_name: string;
-  last_name: string;
+  fullname: string;
+  username: string;
   phone?: string;
   birthdate: string | Date;
   locations?: { location_id: number; location_name: string }[];
