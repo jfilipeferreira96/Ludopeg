@@ -4,34 +4,22 @@ import { usePathname, useRouter } from "next/navigation";
 import { routes } from "@/config/routes";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { notifications } from "@mantine/notifications";
-import { UserType } from "@/services/auth.service";
-import { getChallenges } from "@/services/challenge.service";
-
-export interface User {
-  _id: string;
-  fullname: string;
-  studentId: string;
-  email: string;
-  avatar: string;
-  type: UserType;
-  adminChallenges?: string[];
-  score?: number;
-  password?: string;
-}
+import { User } from "@/types/user";
 
 interface DecodedToken extends JwtPayload {
   user: User;
   exp: number;
 }
 
-type sessionProps = (userData: User, accessToken: string, refreshToken: string, redirect?: boolean | undefined) => void;
+type sessionProps = (userData: User, accessToken: string, redirect?: boolean | undefined) => void;
+
 interface SessionContextProps {
   user: User | null | any;
   sessionLogin: sessionProps;
   logout: () => void;
   isReady: boolean;
-  addToAdminChallenge: (challengeId: string) => void;
-  updateUser: (newUserData: Partial<User>) => void; 
+  updateUser: (newUserData: Partial<User>) => void;
+  config: { torneios: string; ligas: string; isReady: boolean };
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(undefined);
@@ -44,13 +32,12 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isReady, setIsReady] = useState<boolean>(false);
+  const [config, setConfig] = useState({ torneios: "", ligas: "", isReady: false });
   const pathname = usePathname();
- 
-  const sessionLogin: sessionProps = (userData, accessToken, refreshToken, redirect = true) => {
+
+  const sessionLogin: sessionProps = (userData, accessToken, redirect = true) => {
     setUser(userData);
     localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    localStorage.setItem("avatar", userData.avatar);
 
     if (redirect) {
       router.push(routes.home.url);
@@ -60,80 +47,59 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
   const logout = (redirect = true) => {
     setUser(null);
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("avatar");
+
     if (redirect) {
-      router.push(routes.landingpage.url);
+      router.push(routes.signin.url);
     }
   };
 
-  const getSession = async  () => {
+  const getSession = async () => {
     try {
       const accessToken = localStorage.getItem("accessToken") ?? "";
-      const refreshToken = localStorage.getItem("refreshToken") ?? "";
-      const avatar = localStorage.getItem("avatar") ?? "";
       const currentDate = new Date();
 
       if (accessToken) {
         const decodedToken = jwt.decode(accessToken) as DecodedToken;
 
         if (decodedToken.exp * 1000 < currentDate.getTime()) {
-          if (pathname !== routes.landingpage.url) {
-            notifications.show({
-              title: "Error",
-              message: "Session expired",
-              color: "red",
-            });
-          }
+          notifications.show({
+            title: "Erro",
+            message: "Sessão expirou",
+            color: "red",
+          });
 
-          logout();
-        } else {
-          //fetch challenges for setting the adminChallenges
-          const userChallenges = await getChallenges();
-
-          let adminChallenges = decodedToken.adminChallenges;
-          if (userChallenges.challenges.length > 0) {
-            adminChallenges = userChallenges.challenges.reduce((acc: string[], challenge: any) => {
-              if (challenge.admins.includes(decodedToken._id)) {
-                acc.push(challenge._id);
-              }
-              return acc;
-            }, []);
-          }
-
-          const userData = {
-            _id: decodedToken._id,
-            fullname: decodedToken.fullname,
-            studentId: decodedToken.studentId,
-            email: decodedToken.email,
-            avatar: avatar,
-            adminChallenges: adminChallenges,
-            type: decodedToken.type,
-          };
-
-          sessionLogin(userData, accessToken, refreshToken, false);
+          logout(true);
+          return;
         }
+
+        const userData = {
+          id: decodedToken.id,
+          email: decodedToken.email,
+          user_type: decodedToken.user_type,
+          first_name: decodedToken.first_name,
+          last_name: decodedToken.last_name,
+          phone: decodedToken.phone,
+          birthdate: decodedToken.birthdate,
+          locations: decodedToken.locations,
+          offpeaks: decodedToken?.offpeaks ?? [],
+        };
+
+        sessionLogin(userData, accessToken, false);
       } else {
         logout(false);
+        return;
       }
-      setIsReady(true);
     } catch (error) {
       console.error("Erro ao decodificar o token:", error);
       return null;
+    } finally {
+      setIsReady(true);
     }
   };
 
-  const addToAdminChallenge = (challengeId: string) => {
-    setUser((prevUser) => {
-      if (prevUser) {
-        return {
-          ...prevUser,
-          adminChallenges: [...(prevUser.adminChallenges || []), challengeId],
-        };
-      }
-      return null;
-    });
-  };
+  useEffect(() => {
+    getSession();
+  }, []);
 
   const updateUser = (newUserData: Partial<User>) => {
     if (!user) return;
@@ -141,12 +107,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
     setUser(updatedUser);
   };
 
-
-  useEffect(() => {
-    getSession();
-  }, []);
-
-  return <SessionContext.Provider value={{ isReady, user, sessionLogin, logout, addToAdminChallenge, updateUser }}>{children}</SessionContext.Provider>;
+  return <SessionContext.Provider value={{ isReady, user, sessionLogin, logout, updateUser, config }}>{children}</SessionContext.Provider>;
 };
 
 export const useSession = (): SessionContextProps => {

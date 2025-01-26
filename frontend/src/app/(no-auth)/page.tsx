@@ -26,7 +26,7 @@ export default function Home() {
 
   return (
     <>
-      <title>Ludoteca</title>
+      <title>Ludonautas</title>
       <AffixComponent />
       <Hero />
       <CarouselSection />

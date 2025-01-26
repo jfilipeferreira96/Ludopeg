@@ -25,7 +25,7 @@ const Footer = () => {
           <Image src="/alpces.png" alt="Logo" width={75} height={75} />
         </Flex>
         {/* <Text size="sm" color="dimmed">
-          © 2025 Ludoteca
+          © 2025 Ludonautas
         </Text> */}
         <Group className={classes.links}>{items}</Group>
 
