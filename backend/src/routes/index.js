@@ -11,6 +11,7 @@ const articlesRoutes = require("./article.routes");
 const offpeakCardsRoutes = require("./offpeak.routes");
 const vouchersRoutes = require("./vouchers.routes");
 const videoRoutes = require("./video.routes");
+const agendaRoutes = require("./agenda.routes");
 
 const routes = Router();
 
@@ -35,7 +36,8 @@ routes.use("/api/auth", authRoutes);
 
 routes.use("/api/acessos", authenticateToken, acessosRoutes);
 routes.use("/api/dashboard", authenticateToken, dashboardRoutes);
-routes.use("/api/articles", authenticateToken, articlesRoutes);
+routes.use("/api/news", authenticateToken, newsRoutes);
+routes.use("/api/agenda", authenticateToken, agendaRoutes);
 
 routes.use("/api/uploads", express.static(path.join(__dirname, "../uploads")));
 
