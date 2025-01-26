@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     avatar VARCHAR(255) NOT NULL,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
+    fullname VARCHAR(255),
     phone VARCHAR(15) DEFAULT NULL UNIQUE,
     birthdate DATE,
     user_type ENUM('admin', 'player') DEFAULT 'player' NOT NULL,   
@@ -43,6 +42,16 @@ CREATE TABLE IF NOT EXISTS locations (
     country VARCHAR(100) NOT NULL,
     href VARCHAR(255) DEFAULT NULL,
     url VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE news( 
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT DEFAULT NULL,
+    image_path TEXT DEFAULT NULL, 
+    user_id INT NOT NULL, 
+    date DATE DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -15,42 +15,25 @@ class UserController {
     }
 
     return jwt.sign(user, secret, { expiresIn: "30d" });
-
   }
 
   static async login(req, res, next) {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.status(200).json({ status: false, error: "Pedido Inválido", message: "Email e password são obrigatórios" });
+        return res.status(200).json({ status: false, error: "Pedido inválido", message: "Email e palavra-passe são obrigatórios" });
       }
 
       const query = `
-            SELECT u.*, 
-            (
-              SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
-                'offpeak_card_id', uoc.offpeak_card_id,
-                'name', oc.name,
-                'month', oc.month,
-                'year', oc.year,
-                'assigned_by', uoc.assigned_by,
-                'assigned_by_first_name', IFNULL(au.first_name, ''),
-                'assigned_by_last_name', IFNULL(au.last_name, ''),
-                'assigned_at', uoc.assigned_at
-              )), ']') AS offpeaks
-              FROM user_offpeak_cards uoc
-              JOIN offpeak_cards oc ON uoc.offpeak_card_id = oc.offpeak_card_id
-              LEFT JOIN users au ON uoc.assigned_by = au.user_id
-              WHERE uoc.user_id = u.user_id
-          ) AS offpeaks
-            FROM users u
-            WHERE u.email = ?
-        `;
+          SELECT u.*
+          FROM users u
+          WHERE u.email = ?
+      `;
 
       const { rows } = await db.query(query, [email]);
 
       if (rows.length === 0) {
-        return res.status(200).json({ error: "Não Autorizado", status: false, message: "Email ou Password incorretos" });
+        return res.status(200).json({ error: "Não autorizado", status: false, message: "Email ou palavra-passe incorretos" });
       }
 
       const user = rows[0];
@@ -58,18 +41,18 @@ class UserController {
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
-        return res.status(200).json({ error: "Não Autorizado", status: false, message: "Email ou Password incorretos" });
+        return res.status(200).json({ error: "Não autorizado", status: false, message: "Email ou palavra-passe incorretos" });
       }
 
       let locations = [];
 
       if (user.user_type === "admin") {
         const locationsQuery = `
-                SELECT al.location_id, l.name as location_name 
-                FROM admin_locations al 
-                LEFT JOIN locations l ON al.location_id = l.location_id 
-                WHERE al.admin_id = ?
-            `;
+              SELECT al.location_id, l.name as location_name 
+              FROM admin_locations al 
+              LEFT JOIN locations l ON al.location_id = l.location_id 
+              WHERE al.admin_id = ?
+          `;
         const locationsResult = await db.query(locationsQuery, [user.user_id]);
         locations = locationsResult.rows;
       }
@@ -83,8 +66,6 @@ class UserController {
         phone: user.phone,
         birthdate: user.birthdate,
         locations,
-        video_credits: user.video_credits,
-        offpeaks: JSON.parse(user.offpeaks || "[]"),
       });
 
       return res.json({
@@ -98,30 +79,28 @@ class UserController {
           birthdate: user.birthdate,
           phone: user.phone,
           locations,
-          video_credits: user.video_credits,
-          offpeaks: JSON.parse(user.offpeaks || "[]"),
         },
         accessToken,
       });
     } catch (ex) {
       Logger.error("Ocorreu um erro durante o login.", ex);
-      res.status(500).json({ error: "Erro Interno do Servidor", message: ex.message });
+      res.status(500).json({ error: "Erro interno do servidor", message: ex.message });
     }
   }
 
   static async register(req, res, next) {
     try {
-      const { email, phone, password, first_name, last_name, birthdate, user_type, locations } = req.body;
+      const { email, phone, password, fullname, avatar, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date } = req.body;
 
       if (!email || !password) {
-        return res.status(200).json({ status: false, error: "Pedido Inválido", message: "Email e password são obrigatórios" });
+        return res.status(200).json({ status: false, error: "Pedido inválido", message: "Email e palavra-passe são obrigatórios" });
       }
 
       const query = "SELECT * FROM users WHERE email = ?";
       const { rows } = await db.query(query, [email]);
 
       if (rows.length > 0) {
-        return res.status(200).json({ error: "Pedido Inválido", message: "Email já em uso" });
+        return res.status(200).json({ error: "Pedido inválido", message: "Email já em utilização" });
       }
 
       if (phone) {
@@ -129,42 +108,39 @@ class UserController {
         const { rows: phoneResult } = await db.query(queryPhone, [phone]);
 
         if (phoneResult.length > 0) {
-          return res.status(200).json({ error: "Pedido Inválido", message: "Nº de telemóvel já está em uso" });
+          return res.status(200).json({ error: "Pedido inválido", message: "Número de telemóvel já em utilização" });
         }
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const formattedBirthdate = birthdate ? new Date(birthdate).toISOString().slice(0, 19).replace("T", " ") : null;
 
-      let newUser;
+      const insertQuery =
+        "INSERT INTO users (username, password, email, avatar, phone, fullname, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-      if (user_type === "admin") {
-        const insertQuery = "INSERT INTO users (password, email, phone, first_name, last_name, birthdate, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        newUser = await db.query(insertQuery, [hashedPassword, email, phone, first_name, last_name, formattedBirthdate, "admin"]);
-
-        if (locations && Array.isArray(locations) && locations.length > 0) {
-          const admin_id = newUser.rows.insertId;
-
-          const insertLocationsQuery = "INSERT INTO admin_locations (admin_id, location_id) VALUES ";
-          const values = locations.map((loc) => `(${admin_id}, ${loc.value})`).join(", ");
-
-          await db.query(insertLocationsQuery + values);
-        }
-      } else {
-        const insertQuery = "INSERT INTO users (password, email, phone, first_name, last_name, birthdate, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        newUser = await db.query(insertQuery, [hashedPassword, email, phone, first_name, last_name, formattedBirthdate, "player"]);
-      }
+      const newUser = await db.query(insertQuery, [
+        username,
+        hashedPassword,
+        email,
+        avatar,
+        phone,
+        fullname,
+        formattedBirthdate,
+        user_type,
+        is_subscribed_to_newsletter ? 1 : 0,
+        has_fees_paid ? 1 : 0,
+        fee_expiration_date ? fee_expiration_date : null,
+      ]);
 
       const accessToken = UserController.generateAccessToken({
         id: newUser.rows.insertId,
         email: email,
         user_type: user_type === "admin" ? "admin" : "player",
-        first_name: first_name,
-        last_name: last_name,
-        phone: phone,
+        fullname: fullname,
+        username: username,
         phone: phone,
         birthdate: birthdate,
-        offpeaks: [],
+        avatar: avatar,
       });
 
       return res.status(201).json({
@@ -173,19 +149,22 @@ class UserController {
           id: newUser.rows.insertId,
           email: email,
           phone: phone,
+          user_type: user_type,
+          fullname: fullname,
+          username: username,
+          avatar: avatar,
         },
         accessToken,
-        offpeaks: [],
       });
     } catch (ex) {
-      Logger.error("An error occurred during registration.", ex);
-      res.status(500).json({ error: "Internal Server Error", message: ex.message });
+      Logger.error("Ocorreu um erro durante o registo.", ex);
+      res.status(500).json({ error: "Erro interno do servidor", message: ex.message });
     }
   }
 
   static async createAccount(req, res, next) {
     try {
-      const { email, password, first_name, last_name, birthdate, user_type, locations } = req.body;
+      const { email, password, fullname, birthdate, user_type, locations } = req.body;
 
       if (!email || !password) {
         return res.status(200).json({ status: false, error: "Bad Request", message: "Email and password are required" });
@@ -200,12 +179,9 @@ class UserController {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const insertQuery = "INSERT INTO users (password, email, first_name, last_name, birthdate, user_type) VALUES (?, ?, ?, ?, ?, ?)";
-      const newUser = await db.query(insertQuery, [hashedPassword, email, first_name, last_name, birthdate, user_type]);
+      const insertQuery = "INSERT INTO users (password, email, fullname, birthdate, user_type) VALUES (?, ?, ?, ?, ?, ?)";
+      const newUser = await db.query(insertQuery, [hashedPassword, email, fullname, birthdate, user_type]);
       const userId = newUser.rows.insertId;
-
-      if (user_type === "admin" && locations) {
-      }
 
       return res.status(201).json({
         status: true,
@@ -467,31 +443,6 @@ class UserController {
     }
   }
 
-  static async getUserEntryCards(req, res, next) {
-    const userId = req.params.id;
-
-    try {
-      // Verificar se o utilizador solicitado é o mesmo que está a fazer a requisição
-      if (req.user?.id !== parseInt(userId) && req.user?.user_type !== "admin") {
-        return res.status(200).json({ status: false, error: "Forbidden", message: "You are not allowed to access this resource" });
-      }
-
-      // Consultar os cartões de entrada do utilizador
-      const query = `
-        SELECT *
-        FROM entry_cards 
-        WHERE entry_cards.user_id = ? AND entry_cards.is_active = 1
-      `;
-
-      const { rows } = await db.query(query, [userId]);
-
-      return res.status(200).json({ status: true, actual_card: rows });
-    } catch (ex) {
-      Logger.error("An error occurred while fetching user entry cards.", ex);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error", message: ex.message });
-    }
-  }
-
   static async updateOwnUser(req, res, next) {
     const userId = req.params.id;
     const { email, first_name, last_name, birthdate, password } = req.body;
@@ -633,7 +584,7 @@ class UserController {
 
   static async resetPassword(req, res) {
     const { token, newPassword } = req.body;
-    
+
     try {
       const query = "SELECT * FROM users WHERE reset_password_token IS NOT NULL AND reset_password_expires > NOW()";
       const { rows } = await db.query(query);
