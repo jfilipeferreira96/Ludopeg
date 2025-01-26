@@ -21,20 +21,23 @@ export const endpoints = {
 };
 
 export const routes = {
-  landingpage: {
-    url: "/",
-  },
   entrada: {
     url: "/entrada",
   },
   registo: {
     url: "/registo",
   },
+  agenda: {
+    url: "/agenda",
+  },
+  noticias: {
+    url: "/noticias",
+  },
   conta: {
     url: "/conta",
   },
   inicio: {
-    url: "/inicio",
+    url: "/",
   },
   forgotpassword: {
     url: "/forgot-password",

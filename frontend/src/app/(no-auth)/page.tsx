@@ -19,7 +19,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      router.push(routes.home.url);
+      router.push(routes.inicio.url);
       return;
     }
   }, [user]);

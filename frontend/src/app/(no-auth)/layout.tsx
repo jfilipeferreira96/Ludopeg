@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       router.push(routes.inicio.url);
       return;
     }
-    if (!user || pathname === routes.landingpage.url) {
+    if (!user || pathname === routes.inicio.url) {
       setState("success");
       return;
     }

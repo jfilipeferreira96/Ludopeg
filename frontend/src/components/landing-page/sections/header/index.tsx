@@ -2,7 +2,7 @@
 import { Avatar, Group, Button, Box, Burger, useMantineTheme, Title, Flex, rem, ActionIcon, Menu, Text, UnstyledButton, useMantineColorScheme, useComputedColorScheme } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./header.module.css";
-import Link from "next/link";
+import Link from "next/link"; // Aqui importa o Link do Next.js
 import { routes } from "@/config/routes";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/providers/SessionProvider";
@@ -11,9 +11,9 @@ import { ToogleColorTheme } from "@/components/toogle-color";
 import { useState } from "react";
 import { IconSettings } from "@tabler/icons-react";
 import cx from "clsx";
-import { IconBook, IconChartPie3,  IconCode, IconCoin, IconFingerprint, IconNotification } from "@tabler/icons-react";
-import { Anchor,  Center, Collapse, Divider, Drawer , HoverCard, ScrollArea, SimpleGrid,  ThemeIcon } from "@mantine/core";
-import Image from "next/image"; 
+import { IconBook, IconChartPie3, IconCode, IconCoin, IconFingerprint, IconNotification } from "@tabler/icons-react";
+import { Anchor, Center, Collapse, Divider, Drawer, HoverCard, ScrollArea, SimpleGrid, ThemeIcon } from "@mantine/core";
+import Image from "next/image";
 
 const mockdata = [
   {
@@ -56,7 +56,7 @@ export const HeaderMenu = () => {
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
-  
+
   const links = mockdata.map((item) => (
     <UnstyledButton className={classes.subLink} key={item.title}>
       <Group wrap="nowrap" align="flex-start">
@@ -80,36 +80,29 @@ export const HeaderMenu = () => {
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
           <Flex align={"center"} className={classes.minWidth}>
-            <Image
-              src={"/alpces.png"}
-              alt="Logo"
-              width={34}
-              height={40}
-              className={classes.logo}
-              //onClick={() => router.push(routes.Inicio.url)}
-            />
+            <Image src={"/alpces.png"} alt="Logo" width={34} height={40} className={classes.logo} onClick={() => router.push(routes.inicio.url)} />
           </Flex>
 
           <Group h="100%" gap={0} visibleFrom="sm">
-            <a href="#" className={classes.link}>
+            <Link href={routes.inicio.url} className={classes.link}>
               Inicio
-            </a>
+            </Link>
             <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
               <HoverCard.Target>
-                <a href="#" className={classes.link}>
+                <Link href={routes.inicio.url} className={classes.link}>
                   <Center inline>
                     <Box component="span" mr={5}>
                       Features
                     </Box>
                     <IconChevronDown size={16} color={theme.colors.blue[6]} />
                   </Center>
-                </a>
+                </Link>
               </HoverCard.Target>
 
               <HoverCard.Dropdown style={{ overflow: "hidden" }}>
                 <Group justify="space-between" px="md">
                   <Text fw={500}>Features</Text>
-                  <Anchor href="#" fz="xs">
+                  <Anchor href={routes.inicio.url} fz="xs">
                     View all
                   </Anchor>
                 </Group>
@@ -135,12 +128,12 @@ export const HeaderMenu = () => {
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
-            <a href="#" className={classes.link}>
+            <Link href={routes.noticias.url} className={classes.link}>
               Notícias
-            </a>
-            <a href="#" className={classes.link}>
+            </Link>
+            <Link href={routes.agenda.url} className={classes.link}>
               Agenda
-            </a>
+            </Link>
           </Group>
 
           <Group visibleFrom="sm">
@@ -157,9 +150,9 @@ export const HeaderMenu = () => {
         <ScrollArea h="calc(100vh - 80px" mx="-md">
           <Divider my="sm" />
 
-          <a href="#" className={classes.link}>
+          <Link href={routes.inicio.url} className={classes.link}>
             Inicio
-          </a>
+          </Link>
           <UnstyledButton className={classes.link} onClick={toggleLinks}>
             <Center inline>
               <Box component="span" mr={5}>
@@ -169,12 +162,12 @@ export const HeaderMenu = () => {
             </Center>
           </UnstyledButton>
           <Collapse in={linksOpened}>{links}</Collapse>
-          <a href="#" className={classes.link}>
+          <Link href={routes.noticias.url} className={classes.link}>
             Notícias
-          </a>
-          <a href="#" className={classes.link}>
+          </Link>
+          <Link href={routes.agenda.url} className={classes.link}>
             Agenda
-          </a>
+          </Link>
 
           <Divider my="sm" />
 
