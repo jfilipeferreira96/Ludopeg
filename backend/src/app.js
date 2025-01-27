@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 
 // CORS configuration
 const corsOptions = {
-  origin: ["http://localhost:3005", "https://localhost:3005", "https://app.pro-padel.pt/", "https://app.pro-padel.pt", "http://app.pro-padel.pt", , "http://app.pro-padel.pt/"],
+  origin: ["http://localhost:3005", "https://localhost:3005", "https://app.ludopedagogica.org/", "https://app.ludopedagogica.org", "http://app.ludopedagogica.org", "http://app.ludopedagogica.org/"],
   credentials: true,
 };
 app.use(cors(corsOptions));

@@ -3,15 +3,11 @@ const path = require("path");
 const { Router } = require("express");
 const { authenticateToken } = require("../middleware/auth.middleware");
 const UserController = require("../controllers/user");
-const VideoController = require("../controllers/video");
 const authRoutes = require("./user.routes");
 const acessosRoutes = require("./acessos.routes");
 const dashboardRoutes = require("./dashboard.routes");
-const articlesRoutes = require("./article.routes");
-const offpeakCardsRoutes = require("./offpeak.routes");
-const vouchersRoutes = require("./vouchers.routes");
-const videoRoutes = require("./video.routes");
 const agendaRoutes = require("./agenda.routes");
+const newsRoutes = require("./news.routes");
 
 const routes = Router();
 

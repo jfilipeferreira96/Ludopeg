@@ -19,7 +19,5 @@ authRoutes.put("/users/:id", authenticateToken, UserController.updateUser);
 // Rota responsável por editar um user
 authRoutes.put("/account/:id", authenticateToken, UserController.updateOwnUser);
 
-// Rota responsável por retornar o cartao atual de um user
-authRoutes.get("/users/cards/:id", authenticateToken, UserController.getUserEntryCards);
 
 module.exports = authRoutes;

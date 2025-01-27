@@ -1,7 +1,7 @@
 const express = require("express");
-const NewsController = require("../controllers/news");
 const { authenticateToken } = require("../middleware/auth.middleware");
 const multer = require("multer");
+const NewsController = require("../controllers/news");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
