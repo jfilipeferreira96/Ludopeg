@@ -39,6 +39,12 @@ export const routes = {
   inicio: {
     url: "/",
   },
+  contactos: {
+    url: "/contactos",
+  },
+  newsletter: {
+    url: "/newsletter",
+  },
   forgotpassword: {
     url: "/forgot-password",
   },

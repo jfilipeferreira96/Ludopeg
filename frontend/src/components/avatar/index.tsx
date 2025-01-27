@@ -68,7 +68,7 @@ const SetAvatar = ({ selectedAvatar, setSelectedAvatar, initialAvatar }: Props) 
           </div>
           <div style={{display:"grid", justifyContent:"center"}}>
             <Button variant="light" mt="sm" onClick={() => fetchAvatars()} >
-              Refresh Avatars
+              Novos Avatars
             </Button>
             </div>
         </>

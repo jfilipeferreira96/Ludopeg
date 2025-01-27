@@ -4,19 +4,21 @@ import { IconBrandDiscord, IconBrandFacebook, IconBrandGithub, IconBrandInstagra
 import classes from "./footer.module.css";
 import Link from "next/link";
 import Image from "next/image"; 
+import { routes } from "@/config/routes";
 
 const links = [
-  { label: "Contactos", link: "#" },
-  { label: "Newsletter", link: "#" },
+  { label: "Contactos", link: routes.contactos.url },
+  { label: "Newsletter", link: routes.newsletter.url },
 ];
 
 const Footer = () => {
-   const items = links.map((link) => (
-     <Anchor c="dimmed" key={link.label} href={link.link} lh={1} onClick={(event) => event.preventDefault()} size="sm">
-       {link.label}
-     </Anchor>
-   ));
-
+  const items = links.map((link) => (
+    <Link key={link.label} href={link.link} passHref style={{ textDecoration: "none" }}>
+      <Anchor c="dimmed" lh={1} size="sm" style={{ textDecoration: "none" }}>
+        {link.label}
+      </Anchor>
+    </Link>
+  ));
 
   return (
     <div className={classes.footer}>

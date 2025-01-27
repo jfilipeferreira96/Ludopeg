@@ -102,7 +102,7 @@ export default function Register() {
     <Center>
       <form onSubmit={form.onSubmit((values) => onSubmitHandler(values))}>
         <title>Registar</title>
-        <Title ta="center" mt={100}>
+        <Title ta="center" mt={40}>
           Crie uma conta!
         </Title>
 
@@ -113,7 +113,7 @@ export default function Register() {
           </Anchor>
         </Text>
 
-        <StyledPaper withBorder shadow="md" p={30} mt={30} radius="md">
+        <StyledPaper withBorder shadow="md" p={30} mt={30} mb={20} radius="md">
           <TextInput label="Nome Completo" placeholder="O seu nome completo" required {...form.getInputProps("fullname")} className="specialinput" />
 
           <TextInput label="Nome de Utilizador" placeholder="Exemplo: ReiDistoTudo" required {...form.getInputProps("username")} className="specialinput" />

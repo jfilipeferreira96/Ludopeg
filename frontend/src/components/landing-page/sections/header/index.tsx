@@ -92,7 +92,7 @@ export const HeaderMenu = () => {
                 <Link href={routes.inicio.url} className={classes.link}>
                   <Center inline>
                     <Box component="span" mr={5}>
-                      Features
+                      Funcionalidades
                     </Box>
                     <IconChevronDown size={16} color={theme.colors.blue[6]} />
                   </Center>
@@ -101,9 +101,9 @@ export const HeaderMenu = () => {
 
               <HoverCard.Dropdown style={{ overflow: "hidden" }}>
                 <Group justify="space-between" px="md">
-                  <Text fw={500}>Features</Text>
+                  <Text fw={500}>Funcionalidades</Text>
                   <Anchor href={routes.inicio.url} fz="xs">
-                    View all
+                    Ver tudo
                   </Anchor>
                 </Group>
 
@@ -117,17 +117,18 @@ export const HeaderMenu = () => {
                   <Group justify="space-between">
                     <div>
                       <Text fw={500} fz="sm">
-                        Get started
+                        Começar
                       </Text>
                       <Text size="xs" c="dimmed">
-                        Their food sources have decreased, and their numbers
+                        As fontes de alimento deles diminuíram, e os números também
                       </Text>
                     </div>
-                    <Button variant="default">Get started</Button>
+                    <Button variant="default">Começar</Button>
                   </Group>
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
+
             <Link href={routes.noticias.url} className={classes.link}>
               Notícias
             </Link>
@@ -136,10 +137,16 @@ export const HeaderMenu = () => {
             </Link>
           </Group>
 
+
           <Group visibleFrom="sm">
             <ToogleColorTheme />
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
+
+            <Link href={routes.entrada.url} passHref>
+              <Button variant="default">Entrar</Button>
+            </Link>
+            <Link href={routes.registo.url} passHref>
+              <Button>Registar</Button>
+            </Link>
           </Group>
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
@@ -172,8 +179,12 @@ export const HeaderMenu = () => {
           <Divider my="sm" />
 
           <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
+            <Link href={routes.entrada.url} passHref>
+              <Button variant="default">Entrar</Button>
+            </Link>
+            <Link href={routes.registo.url} passHref>
+              <Button>Registar</Button>
+            </Link>
           </Group>
         </ScrollArea>
       </Drawer>
