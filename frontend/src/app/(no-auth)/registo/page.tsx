@@ -38,6 +38,7 @@ const schema = z.object({
   is_subscribed_to_newsletter: z.boolean(),
   has_fees_paid: z.boolean(),
   fee_expiration_date: z.string().optional(),
+  user_type: z.enum(["player", "admin"]), 
 });
 
 export default function Register() {
@@ -48,6 +49,7 @@ export default function Register() {
   const form = useForm({
     initialValues: {
       fullname: "",
+      username: "", 
       email: "",
       password: "",
       avatar: "",
@@ -60,7 +62,6 @@ export default function Register() {
     },
     validate: zodResolver(schema),
   });
-
   useEffect(() => {
     if (selectedAvatar) {
       form.setValues({

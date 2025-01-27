@@ -15,7 +15,7 @@ export interface RegisterData {
   avatar: string; 
   phone?: string; 
   birthdate?: string; 
-  user_type: "admin" | "player"; 
+  user_type: "admin" | "player" | string; 
   is_subscribed_to_newsletter?: boolean;
   has_fees_paid?: boolean; 
   fee_expiration_date?: string | null; 

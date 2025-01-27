@@ -44,19 +44,6 @@ class UserController {
         return res.status(200).json({ error: "Não autorizado", status: false, message: "Email ou palavra-passe incorretos" });
       }
 
-      let locations = [];
-
-      if (user.user_type === "admin") {
-        const locationsQuery = `
-              SELECT al.location_id, l.name as location_name 
-              FROM admin_locations al 
-              LEFT JOIN locations l ON al.location_id = l.location_id 
-              WHERE al.admin_id = ?
-          `;
-        const locationsResult = await db.query(locationsQuery, [user.user_id]);
-        locations = locationsResult.rows;
-      }
-
       const accessToken = UserController.generateAccessToken({
         id: user.user_id,
         email: user.email,
@@ -65,7 +52,6 @@ class UserController {
         last_name: user.last_name,
         phone: user.phone,
         birthdate: user.birthdate,
-        locations,
       });
 
       return res.json({
@@ -78,7 +64,6 @@ class UserController {
           last_name: user.last_name,
           birthdate: user.birthdate,
           phone: user.phone,
-          locations,
         },
         accessToken,
       });
@@ -164,7 +149,7 @@ class UserController {
 
   static async createAccount(req, res, next) {
     try {
-      const { email, password, fullname, birthdate, user_type, locations } = req.body;
+      const { email, password, fullname, birthdate, user_type } = req.body;
 
       if (!email || !password) {
         return res.status(200).json({ status: false, error: "Bad Request", message: "Email and password are required" });
@@ -205,23 +190,7 @@ class UserController {
 
     try {
       const query = `
-            SELECT u.*, 
-            (
-              SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
-                'offpeak_card_id', uoc.offpeak_card_id,
-                'name', oc.name,
-                'month', oc.month,
-                'year', oc.year,
-                'assigned_by', uoc.assigned_by,
-                'assigned_by_first_name', IFNULL(au.first_name, ''),
-                'assigned_by_last_name', IFNULL(au.last_name, ''),
-                'assigned_at', uoc.assigned_at
-              )), ']') AS offpeaks
-              FROM user_offpeak_cards uoc
-              JOIN offpeak_cards oc ON uoc.offpeak_card_id = oc.offpeak_card_id
-              LEFT JOIN users au ON uoc.assigned_by = au.user_id
-              WHERE uoc.user_id = u.user_id
-          ) AS offpeaks
+            SELECT u.*
             FROM users u
             WHERE u.user_id = ?
         `;
@@ -233,23 +202,9 @@ class UserController {
       }
 
       const data = rows[0];
-      let locations = [];
-      if (data.user_type === "admin") {
-        const locationsQuery = `
-          SELECT al.location_id, l.name as location_name 
-          FROM admin_locations al 
-          LEFT JOIN locations l ON al.location_id = l.location_id 
-          WHERE al.admin_id = ?
-        `;
-
-        const locationsResult = await db.query(locationsQuery, [data.user_id]);
-        locations = locationsResult.rows;
-      }
 
       const user = {
         ...rows[0],
-        locations,
-        offpeaks: JSON.parse(rows[0].offpeaks),
       };
 
       return res.status(200).json(user);
@@ -264,23 +219,7 @@ class UserController {
       const { page = 1, limit = 15, orderBy = "user_id", order = "ASC" } = req.body.pagination || {};
 
       let query = `
-            SELECT u.*, 
-            (
-              SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
-                  'offpeak_card_id', uoc.offpeak_card_id,
-                  'name', oc.name,
-                  'month', oc.month,
-                  'year', oc.year,
-                  'assigned_by', uoc.assigned_by,
-                  'assigned_by_first_name', IFNULL(au.first_name, ''),
-                  'assigned_by_last_name', IFNULL(au.last_name, ''),
-                  'assigned_at', uoc.assigned_at
-                )), ']') AS offpeaks
-                FROM user_offpeak_cards uoc
-                JOIN offpeak_cards oc ON uoc.offpeak_card_id = oc.offpeak_card_id
-                LEFT JOIN users au ON uoc.assigned_by = au.user_id
-                WHERE uoc.user_id = u.user_id
-            ) AS offpeaks
+            SELECT u.*
             FROM users u
             WHERE 1 = 1
         `;
@@ -327,7 +266,6 @@ class UserController {
 
       const users = rows.map((row) => ({
         ...row,
-        offpeaks: JSON.parse(row.offpeaks),
       }));
 
       return res.status(200).json({
@@ -369,7 +307,7 @@ class UserController {
 
   static async updateUser(req, res, next) {
     const userId = req.params.id;
-    const { email, first_name, last_name, birthdate, user_type = "player", locations, phone } = req.body;
+    const { email, first_name, last_name, birthdate, user_type = "player", phone } = req.body;
 
     try {
       if (!req.body) {
@@ -405,24 +343,6 @@ class UserController {
     `;
       const formattedBirthdate = birthdate ? new Date(birthdate).toISOString().slice(0, 19).replace("T", " ") : null;
       await db.query(updateQuery, [email, first_name, last_name, phone, formattedBirthdate, user_type, userId]);
-
-      // Se o utilizador for do tipo admin e locations for zero ou não definido, apagar todas as entradas de admin_locations
-      if (user_type === "admin" && (!locations || locations.length === 0)) {
-        // Apagar todas as entradas existentes do admin_locations para o utilizador
-        const deleteQuery = "DELETE FROM admin_locations WHERE admin_id = ?";
-        await db.query(deleteQuery, [userId]);
-      } else if (user_type === "admin" && locations && locations.length > 0) {
-        // Se houver locations, atualizar admin_locations
-        // Apagar todas as entradas existentes do admin_locations para o utilizador
-        const deleteQuery = "DELETE FROM admin_locations WHERE admin_id = ?";
-        await db.query(deleteQuery, [userId]);
-
-        // Inserir novas entradas para as locations recebidas
-        const insertLocationsQuery = "INSERT INTO admin_locations (admin_id, location_id) VALUES ";
-        const values = locations.map((loc) => `(${userId}, ${loc.value})`).join(", ");
-
-        await db.query(insertLocationsQuery + values);
-      }
 
       return res.status(200).json({
         status: true,

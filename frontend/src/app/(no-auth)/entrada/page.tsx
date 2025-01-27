@@ -10,6 +10,7 @@ import styled from "styled-components";
 import { useSession } from "@/providers/SessionProvider";
 import { z } from "zod";
 import Image from "next/image";
+import ThreeDButton from "@/components/3dbutton";
 
 const StyledPaper = styled(Paper)`
   width: 500px;
@@ -94,9 +95,9 @@ export default function IniciarSessao() {
               Esqueceu-se da palavra-passe?
             </Text>
           </Group>
-          <Button fullWidth type="submit" disabled={isLoading}>
+          <ThreeDButton color="blue" mt="xl" type="submit" smaller disabled={isLoading}>
             Iniciar sessão
-          </Button>
+          </ThreeDButton>
         </StyledPaper>
       </form>
     </Center>

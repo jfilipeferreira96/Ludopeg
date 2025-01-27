@@ -6,7 +6,7 @@ import Link from "next/link"; // Aqui importa o Link do Next.js
 import { routes } from "@/config/routes";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/providers/SessionProvider";
-import { IconChevronDown, IconLogout, IconMoon, IconSun } from "@tabler/icons-react";
+import { IconChevronDown, IconLayoutDashboard, IconLogout, IconMoon, IconSun, IconUser } from "@tabler/icons-react";
 import { ToogleColorTheme } from "@/components/toogle-color";
 import { useState } from "react";
 import { IconSettings } from "@tabler/icons-react";
@@ -56,7 +56,9 @@ export const HeaderMenu = () => {
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
-
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
+  console.log(user)
   const links = mockdata.map((item) => (
     <UnstyledButton className={classes.subLink} key={item.title}>
       <Group wrap="nowrap" align="flex-start">
@@ -137,16 +139,60 @@ export const HeaderMenu = () => {
             </Link>
           </Group>
 
-
           <Group visibleFrom="sm">
-            <ToogleColorTheme />
+            {!user && <ToogleColorTheme />}
+            {user && <Group visibleFrom="md" gap={2}>
+              <Menu width={260} position="bottom-end" transitionProps={{ transition: "pop-top-right" }} onClose={() => setUserMenuOpened(false)} onOpen={() => setUserMenuOpened(true)} withinPortal>
+                <Menu.Target>
+                  
+                  <UnstyledButton className={cx(classes.user, { [classes.userActive]: userMenuOpened })}>
+                    <Group gap={7}>
+                      <IconUser size={20} />
+                      {/* <Avatar src={user?.avatar} alt="it's me" radius={"xl"} /> */}
+                      <Text fw={500} size="sm" lh={1} mr={3}>
+                        {user?.email}
+                      </Text>
+                      <IconChevronDown style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+                    </Group>
+                  </UnstyledButton>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {user && user.user_type === "admin" && (
+                    <>
+                      <Menu.Label>Aplicação</Menu.Label>
+                      <Menu.Item leftSection={<IconLayoutDashboard style={{ width: rem(16), height: rem(16) }} />}>Dashboard</Menu.Item>
+                      <Menu.Divider />
+                    </>
+                  )}
 
-            <Link href={routes.entrada.url} passHref>
-              <Button variant="default">Entrar</Button>
-            </Link>
-            <Link href={routes.registo.url} passHref>
-              <Button>Registar</Button>
-            </Link>
+                  <Menu.Label>Configurações</Menu.Label>
+
+                  <Menu.Item
+                    leftSection={computedColorScheme === "light" ? <IconMoon style={{ width: rem(16), height: rem(16) }} stroke={1.5} /> : <IconSun style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
+                    onClick={() => setColorScheme(computedColorScheme === "light" ? "dark" : "light")}
+                  >
+                    {computedColorScheme === "light" ? "Modo noturno" : "Modo diurno"}
+                  </Menu.Item>
+                  <Menu.Item leftSection={<IconSettings style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}>Configurações da conta</Menu.Item>
+                  <Menu.Item leftSection={<IconLogout style={{ width: rem(16), height: rem(16) }} stroke={1.5} />} onClick={logout}>
+                    Terminar sessão
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </Group>}
+
+            <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="md" />
+            {!user && (
+              <>
+                <Link href={routes.entrada.url} passHref>
+                  <Button variant="default">Entrar</Button>
+                </Link>
+                <Link href={routes.registo.url} passHref>
+                  <Button>Registar</Button>
+                </Link>
+              </>
+            )}
+            {user && <></>}
           </Group>
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
@@ -178,14 +224,16 @@ export const HeaderMenu = () => {
 
           <Divider my="sm" />
 
-          <Group justify="center" grow pb="xl" px="md">
-            <Link href={routes.entrada.url} passHref>
-              <Button variant="default">Entrar</Button>
-            </Link>
-            <Link href={routes.registo.url} passHref>
-              <Button>Registar</Button>
-            </Link>
-          </Group>
+          {!user && (
+            <Group justify="center" grow pb="xl" px="md">
+              <Link href={routes.entrada.url} passHref>
+                <Button variant="default">Entrar</Button>
+              </Link>
+              <Link href={routes.registo.url} passHref>
+                <Button>Registar</Button>
+              </Link>
+            </Group>
+          )}
         </ScrollArea>
       </Drawer>
     </Box>
