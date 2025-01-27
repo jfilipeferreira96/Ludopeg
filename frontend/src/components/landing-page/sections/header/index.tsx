@@ -150,7 +150,7 @@ export const HeaderMenu = () => {
                       <IconUser size={20} />
                       {/* <Avatar src={user?.avatar} alt="it's me" radius={"xl"} /> */}
                       <Text fw={500} size="sm" lh={1} mr={3}>
-                        {user?.email}
+                        {user?.username}
                       </Text>
                       <IconChevronDown style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
                     </Group>

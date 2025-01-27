@@ -17,132 +17,118 @@ class UserController {
     return jwt.sign(user, secret, { expiresIn: "30d" });
   }
 
-  static async login(req, res, next) {
+  static removePassword(user) {
+    const { password, ...rest } = user;
+    return rest;
+  }
+
+  static async login(req, res) {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.status(200).json({ status: false, error: "Pedido inválido", message: "Email e palavra-passe são obrigatórios" });
-      }
-
-      const query = `
-          SELECT u.*
-          FROM users u
-          WHERE u.email = ?
-      `;
-
-      const { rows } = await db.query(query, [email]);
-
-      if (rows.length === 0) {
-        return res.status(200).json({ error: "Não autorizado", status: false, message: "Email ou palavra-passe incorretos" });
-      }
-
-      const user = rows[0];
-
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-
-      if (!isPasswordValid) {
-        return res.status(200).json({ error: "Não autorizado", status: false, message: "Email ou palavra-passe incorretos" });
-      }
-
-      const accessToken = UserController.generateAccessToken({
-        id: user.user_id,
-        email: user.email,
-        user_type: user.user_type,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        phone: user.phone,
-        birthdate: user.birthdate,
-      });
-
-      return res.json({
-        status: true,
-        user: {
-          id: user.user_id,
-          email: user.email,
-          user_type: user.user_type,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          birthdate: user.birthdate,
-          phone: user.phone,
-        },
-        accessToken,
-      });
-    } catch (ex) {
-      Logger.error("Ocorreu um erro durante o login.", ex);
-      res.status(500).json({ error: "Erro interno do servidor", message: ex.message });
-    }
-  }
-
-  static async register(req, res, next) {
-    try {
-      const { email, phone, password, fullname, avatar, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date } = req.body;
-
-      if (!email || !password) {
-        return res.status(200).json({ status: false, error: "Pedido inválido", message: "Email e palavra-passe são obrigatórios" });
+        return res.status(200).json({
+          status: false,
+          error: "Pedido inválido",
+          message: "Email e palavra-passe são obrigatórios",
+        });
       }
 
       const query = "SELECT * FROM users WHERE email = ?";
       const { rows } = await db.query(query, [email]);
 
-      if (rows.length > 0) {
-        return res.status(200).json({ error: "Pedido inválido", message: "Email já em utilização" });
+      if (rows.length === 0) {
+        return res.status(200).json({
+          status: false,
+          error: "Não autorizado",
+          message: "Email ou palavra-passe incorretos",
+        });
+      }
+
+      const user = rows[0];
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return res.status(200).json({
+          status: false,
+          error: "Não autorizado",
+          message: "Email ou palavra-passe incorretos",
+        });
+      }
+
+      const accessToken = UserController.generateAccessToken(UserController.removePassword(user));
+
+      return res.json({
+        status: true,
+        user: UserController.removePassword(user),
+        accessToken,
+      });
+    } catch (ex) {
+      Logger.error("Erro durante o login.", ex);
+      res.status(500).json({ error: "Erro interno do servidor", message: ex.message });
+    }
+  }
+
+  static async register(req, res) {
+    try {
+      const { email, password, phone, fullname, avatar, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date } = req.body;
+
+      if (!email || !password) {
+        return res.status(200).json({
+          status: false,
+          error: "Pedido inválido",
+          message: "Email e palavra-passe são obrigatórios",
+        });
+      }
+
+      const emailQuery = "SELECT * FROM users WHERE email = ?";
+      const { rows: emailRows } = await db.query(emailQuery, [email]);
+
+      if (emailRows.length > 0) {
+        return res.status(200).json({
+          error: "Pedido inválido",
+          message: "Email já em utilização",
+        });
       }
 
       if (phone) {
-        const queryPhone = "SELECT * FROM users WHERE phone = ?";
-        const { rows: phoneResult } = await db.query(queryPhone, [phone]);
-
-        if (phoneResult.length > 0) {
-          return res.status(200).json({ error: "Pedido inválido", message: "Número de telemóvel já em utilização" });
+        const phoneQuery = "SELECT * FROM users WHERE phone = ?";
+        const { rows: phoneRows } = await db.query(phoneQuery, [phone]);
+        if (phoneRows.length > 0) {
+          return res.status(200).json({
+            error: "Pedido inválido",
+            message: "Número de telemóvel já em utilização",
+          });
         }
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const formattedBirthdate = birthdate ? new Date(birthdate).toISOString().slice(0, 19).replace("T", " ") : null;
 
-      const insertQuery =
-        "INSERT INTO users (username, password, email, avatar, phone, fullname, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      const insertQuery = "INSERT INTO users (email, password, phone, fullname, avatar, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      const result = await db.query(insertQuery, [email, hashedPassword, phone, fullname, avatar, formattedBirthdate, user_type, is_subscribed_to_newsletter ? 1 : 0, has_fees_paid ? 1 : 0, fee_expiration_date || null]);
 
-      const newUser = await db.query(insertQuery, [
-        username,
-        hashedPassword,
+      const newUser = {
+        id: result.rows.insertId,
         email,
-        avatar,
         phone,
         fullname,
-        formattedBirthdate,
+        avatar,
+        birthdate,
         user_type,
-        is_subscribed_to_newsletter ? 1 : 0,
-        has_fees_paid ? 1 : 0,
-        fee_expiration_date ? fee_expiration_date : null,
-      ]);
+        is_subscribed_to_newsletter,
+        has_fees_paid,
+        fee_expiration_date,
+      };
 
-      const accessToken = UserController.generateAccessToken({
-        id: newUser.rows.insertId,
-        email: email,
-        user_type: user_type === "admin" ? "admin" : "player",
-        fullname: fullname,
-        username: username,
-        phone: phone,
-        birthdate: birthdate,
-        avatar: avatar,
-      });
+      const accessToken = UserController.generateAccessToken(newUser);
 
       return res.status(201).json({
         status: true,
-        user: {
-          id: newUser.rows.insertId,
-          email: email,
-          phone: phone,
-          user_type: user_type,
-          fullname: fullname,
-          username: username,
-          avatar: avatar,
-        },
+        user: newUser,
         accessToken,
       });
     } catch (ex) {
-      Logger.error("Ocorreu um erro durante o registo.", ex);
+      Logger.error("Erro durante o registo.", ex);
       res.status(500).json({ error: "Erro interno do servidor", message: ex.message });
     }
   }
@@ -181,101 +167,52 @@ class UserController {
     }
   }
 
-  static async getSingleUser(req, res, next) {
-    const { id } = req.params;
-
-    if (!id || isNaN(parseInt(id))) {
-      return res.status(200).json({ error: "Invalid user ID" });
-    }
-
+  static async getSingleUser(req, res) {
     try {
-      const query = `
-            SELECT u.*
-            FROM users u
-            WHERE u.user_id = ?
-        `;
+      const { id } = req.params;
+      if (!id || isNaN(parseInt(id))) {
+        return res.status(200).json({ error: "ID de utilizador inválido" });
+      }
 
+      const query = "SELECT * FROM users WHERE user_id = ?";
       const { rows } = await db.query(query, [id]);
 
       if (rows.length === 0) {
-        return res.status(200).json({ error: "User not found" });
+        return res.status(200).json({ error: "Utilizador não encontrado" });
       }
 
-      const data = rows[0];
-
-      const user = {
-        ...rows[0],
-      };
-
-      return res.status(200).json(user);
-    } catch (error) {
-      Logger.error(`An error occurred while fetching user with ID ${id}:`, error);
-      return res.status(500).json({ error: "Internal Server Error", message: error.message });
+      return res.status(200).json(UserController.removePassword(rows[0]));
+    } catch (ex) {
+      Logger.error(`Erro ao obter utilizador com ID ${req.params.id}.`, ex);
+      res.status(500).json({ error: "Erro interno do servidor", message: ex.message });
     }
   }
 
-  static async getAllUsers(req, res, next) {
+  static async getAllUsers(req, res) {
     try {
       const { page = 1, limit = 15, orderBy = "user_id", order = "ASC" } = req.body.pagination || {};
 
-      let query = `
-            SELECT u.*
-            FROM users u
-            WHERE 1 = 1
-        `;
-
-      let totalCountQuery = `
-            SELECT COUNT(*) as count
-            FROM users
-            WHERE 1 = 1
-        `;
-
-      const params = [];
-
-      if (req.body.filters) {
-        const { user_type, created_at, email, name, phone } = req.body.filters;
-
-        if (user_type) {
-          query += ` AND u.user_type = ?`;
-          totalCountQuery += ` AND user_type = ?`;
-          params.push(user_type);
-        }
-
-        if (created_at) {
-          query += ` AND DATE(u.created_at) = ?`;
-          totalCountQuery += ` AND DATE(created_at) = ?`;
-          params.push(created_at);
-        }
-
-        const searchValue = email || name || phone;
-        if (searchValue) {
-          query += ` AND (u.email LIKE ? OR u.phone LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ?)`;
-          totalCountQuery += ` AND (email LIKE ? OR phone LIKE ? OR first_name LIKE ? OR last_name LIKE ?)`;
-          const searchPattern = `%${searchValue}%`;
-          params.push(searchPattern, searchPattern, searchPattern, searchPattern);
-        }
-      }
-
       const offset = (page - 1) * limit;
+      const baseQuery = "SELECT * FROM users";
+      const paginationQuery = `${baseQuery} ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
 
-      query += ` ORDER BY ${orderBy} ${order} LIMIT ? OFFSET ?`;
-      params.push(limit, offset);
-
-      const { rows } = await db.query(query, params);
-      const { rows: totalCountRows } = await db.query(totalCountQuery, params.slice(0, params.length - 2));
-
-      const users = rows.map((row) => ({
-        ...row,
-      }));
+      const { rows: users } = await db.query(paginationQuery, [limit, offset]);
+      const { rows: countResult } = await db.query("SELECT COUNT(*) as count FROM users");
 
       return res.status(200).json({
         status: true,
-        data: users,
-        pagination: { page, limit, orderBy, order, total: parseInt(totalCountRows[0].count) },
+        data: users.map(UserController.removePassword),
+        pagination: {
+          page,
+          limit,
+          orderBy,
+          order,
+          total: parseInt(countResult[0].count),
+        },
       });
     } catch (ex) {
-      Logger.error("An error occurred while fetching users.", ex);
-      res.status(500).json({ error: "Internal Server Error", message: ex.message });
+      Logger.error("Erro ao obter todos os utilizadores.", ex);
+      res.status(500).json({ error: "Erro interno do servidor", message: ex.message });
     }
   }
 
