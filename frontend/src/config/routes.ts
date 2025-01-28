@@ -48,4 +48,16 @@ export const routes = {
   forgotpassword: {
     url: "/forgot-password",
   },
+  dashboard: {
+    url: "/dashboard",
+    entries: "/dashboard/entries",
+    articles: "/dashboard/articles",
+    offpeak: "/dashboard/offpeak",
+    vouchers: "/dashboard/vouchers",
+    videoCredits: "/dashboard/video-credits",
+    orders: "/dashboard/orders",
+    users: "/dashboard/users",
+    validations: "/dashboard/validations",
+    configurations: "/dashboard/configurations",
+  },
 };

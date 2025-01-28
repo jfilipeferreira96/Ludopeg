@@ -160,7 +160,7 @@ export const HeaderMenu = () => {
                   {user && user.user_type === "admin" && (
                     <>
                       <Menu.Label>Aplicação</Menu.Label>
-                      <Menu.Item leftSection={<IconLayoutDashboard style={{ width: rem(16), height: rem(16) }} />}>Dashboard</Menu.Item>
+                      <Menu.Item onClick={() => router.push(routes.dashboard.url)} leftSection={<IconLayoutDashboard style={{ width: rem(16), height: rem(16) }} />}>Dashboard</Menu.Item>
                       <Menu.Divider />
                     </>
                   )}

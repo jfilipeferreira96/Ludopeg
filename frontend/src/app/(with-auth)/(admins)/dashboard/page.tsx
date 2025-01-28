@@ -16,9 +16,9 @@ export default function Home() {
         return;
       }
 
-      router.push(routes.home.url);
+      router.push(routes.inicio.url);
     } else {
-      router.push(routes.signin.url);
+      router.push(routes.entrada.url);
     }
   }, [user]);
 

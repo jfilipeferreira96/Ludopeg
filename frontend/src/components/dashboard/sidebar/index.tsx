@@ -3,7 +3,6 @@ import { Group, Code, Text, Select, Modal, Button } from "@mantine/core";
 import { IconFingerprint, IconLicense, IconShoppingCart, IconUser, IconSettings, IconSwitchHorizontal, IconLogout, IconHome, IconBrandProducthunt, IconCards, IconNews, IconGift } from "@tabler/icons-react";
 import classes from "./NavbarSimpleColored.module.css";
 import { useSession } from "@/providers/SessionProvider";
-import { useLocation } from "@/providers/LocationProvider";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { usePathname, useRouter } from "next/navigation";
 import { routes } from "@/config/routes";
@@ -28,7 +27,8 @@ interface Props {
 export function NavbarSimpleColored(props: Props) {
   const { close: closeNavbar } = props;
   const { logout } = useSession();
-  const { location, setLocation, availableLocations } = useLocation();
+/*   const { location, setLocation, availableLocations } = useLocation();
+ */
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedLocation, setSelectedLocation] = useState(location);
   const pathname = usePathname();
@@ -84,32 +84,32 @@ export function NavbarSimpleColored(props: Props) {
   return (
     <>
       <Modal opened={opened} onClose={close} title="Mudar de localização" centered>
-        <Select
+        {/* <Select
           className="specialinput"
           label="Localizações disponíveis"
           placeholder="Selecione uma localização"
           data={availableLocations.map((loc) => loc.label)}
           defaultValue={location?.label}
           onChange={handleLocationChange}
-        />
+        /> */}
         <Button fullWidth mt="sm" onClick={handleSave}>
           Guardar
         </Button>
       </Modal>
     
       <nav className={classes.navbar}>
-        <Group className={classes.header} justify="space-between">
+        {/* <Group className={classes.header} justify="space-between">
           <Text fw={700} size="sm" className={classes.title}>
             Localização:
           </Text>
           <Code fw={700} className={classes.version}>
             {location?.label}
           </Code>
-        </Group>
+        </Group> */}
         <div className={classes.navbarMain}>{links}</div>
 
         <div className={classes.footer}>
-          <div className={classes.link} onClick={() => router.push(routes.home.url)}>
+          <div className={classes.link} onClick={() => router.push(routes.inicio.url)}>
             <IconHome className={classes.linkIcon} stroke={1.5} />
             <span>Sair do Dashboard</span>
           </div>

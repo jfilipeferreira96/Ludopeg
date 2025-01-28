@@ -5,7 +5,6 @@ import { getDashboardEntries } from "@/services/dashboard.service";
 import { IconCheck, IconRefresh, IconSearch, IconX } from "@tabler/icons-react";
 import { removeEntry, validateEntry, ValidateProps } from "@/services/acessos.service";
 import { notifications } from "@mantine/notifications";
-import { useLocation } from "@/providers/LocationProvider";
 import { usePathname } from "next/navigation";
 import QrReader from "@/components/qrcode-reader";
 
@@ -47,7 +46,6 @@ function Dashboard() {
   const [elementos, setElementos] = useState<Elemento[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [totalElements, setTotalElements] = useState<number>(0);
-  const { location } = useLocation();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterOption, setFilterOption] = useState<string | null>(() => {
     const storedValue = localStorage.getItem('filterOption');
@@ -57,6 +55,7 @@ function Dashboard() {
   const fetchData = async () => {
     setLoading(true);
     if (!location || !location.value) return;
+    
     try {
       const pagination = {
         page: activePage,
