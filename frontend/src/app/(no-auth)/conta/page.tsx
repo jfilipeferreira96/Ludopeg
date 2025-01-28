@@ -79,7 +79,7 @@ export default function UpdateAccount() {
             });
         }
     }, [selectedAvatar]);
-
+    console.log(user);
     const onSubmitHandler = useCallback(async (data: Partial<User>) => {
         try
         {
@@ -125,16 +125,9 @@ export default function UpdateAccount() {
         <Center>
             <form onSubmit={form.onSubmit((values) => onSubmitHandler(values))}>
                 <title>Configurações da Conta</title>
-                <Title ta="center" mt={100}>
+                <Title ta="center" mt={30}>
                     Atualize as suas informações
                 </Title>
-
-                <Text c="dimmed" size="sm" ta="center" mt={5}>
-                    Pretende voltar?
-                    <Anchor size="sm" component="a" ml={2} onClick={() => router.push(routes.inicio.url)}>
-                        Página Inicial
-                    </Anchor>
-                </Text>
 
                 <StyledPaper withBorder shadow="md" p={30} mt={30} radius="md">
                     <TextInput label="Nome Completo" placeholder="O seu nome completo" required {...form.getInputProps("fullname")} className="specialinput" />

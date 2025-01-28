@@ -73,17 +73,10 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
         }
 
         const userData = {
-          id: decodedToken.id,
-          email: decodedToken.email,
-          user_type: decodedToken.user_type,
-          first_name: decodedToken.first_name,
-          last_name: decodedToken.last_name,
-          phone: decodedToken.phone,
-          birthdate: decodedToken.birthdate,
-          locations: decodedToken.locations,
-          offpeaks: decodedToken?.offpeaks ?? [],
+          ...decodedToken.user,
+          exp: decodedToken.exp,
         };
-
+        
         sessionLogin(userData, accessToken, false);
       } else {
         logout(false);

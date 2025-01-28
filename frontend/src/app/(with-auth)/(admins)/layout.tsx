@@ -5,10 +5,10 @@ import { useEffect } from "react";
 import { routes } from "@/config/routes";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { AppShell, Burger } from "@mantine/core";
-import { AdminHeader } from "@/components/header/admin-header";
-import { NavbarSimpleColored } from "@/components/sidebar";
+import { NavbarSimpleColored } from "@/components/dashboard/sidebar";
 import 'dayjs/locale/pt';
 import { DatesProvider } from '@mantine/dates';
+import { AdminHeader } from "@/components/dashboard/header/admin-header";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isReady } = useSession();
@@ -21,11 +21,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (!isReady) return;
 
     if (!user?.id && isReady) {
-      router.push(routes.signin.url)
+      router.push(routes.entrada.url)
     }
 
     if (user && user.user_type !== "admin") {
-      router.push(routes.home.url);
+      router.push(routes.inicio.url);
     }
   }, [user, isReady])
 
