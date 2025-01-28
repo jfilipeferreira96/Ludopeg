@@ -74,7 +74,6 @@ export default function Register() {
     async (data: RegisterData) => {
       try
       {
-        console.log(data)
         const response = await register(data);
         if (response.status) {
           notifications.show({

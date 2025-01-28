@@ -6,6 +6,7 @@ import '@mantine/notifications/styles.css';
 import { SessionProvider } from "@/providers/SessionProvider";
 import "./global.scss";
 import styled from "styled-components";
+import { LocationProvider } from "@/providers/LocationProvider";
 
 
 export const theme = createTheme({
@@ -40,8 +41,10 @@ const Theme = ({ children }: { children: React.ReactNode }) => {
   return (
     <MantineProvider theme={theme} defaultColorScheme="dark" colorSchemeManager={colorSchemeManager}>
       <SessionProvider>
-        <StyledNotification position="top-center" zIndex={1000} limit={3} />
-        {children}
+        <LocationProvider>
+          <StyledNotification position="top-center" zIndex={1000} limit={3} />
+            {children}
+        </LocationProvider>
       </SessionProvider>
     </MantineProvider>
   );

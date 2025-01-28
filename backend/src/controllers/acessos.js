@@ -81,7 +81,7 @@ class AcessosController {
   static async ValidateEntries(req, res) {
     try {
       const { entryIds } = req.body;
-      const adminId = req?.user?.id;
+      const adminId = req?.user?.user_id;
 
       if (!adminId || !entryIds || !Array.isArray(entryIds) || entryIds.length === 0) {
         return res.status(200).json({ status: false, message: "Parâmetros inválidos." });

@@ -18,7 +18,7 @@ class NewsController {
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
 
-      const { rows: newNews } = await db.query(query, [title, content, image_path, download_path ?? image_path, req.user?.id, is_active, date]);
+      const { rows: newNews } = await db.query(query, [title, content, image_path, download_path ?? image_path, req.user?.user_id, is_active, date]);
 
       const newsId = newNews.insertId;
 

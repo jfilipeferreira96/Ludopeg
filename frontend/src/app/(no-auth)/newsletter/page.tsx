@@ -27,7 +27,6 @@ export default function Newsletter() {
         message: "Obrigado por subscrever a nossa newsletter.",
         color: "green",
       });
-      console.log(email)
     } catch (error) {
       notifications.show({
         title: "Erro",

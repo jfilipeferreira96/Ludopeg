@@ -58,7 +58,7 @@ export const HeaderMenu = () => {
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme("light", { getInitialValueInEffect: true });
-  console.log(user)
+  
   const links = mockdata.map((item) => (
     <UnstyledButton className={classes.subLink} key={item.title}>
       <Group wrap="nowrap" align="flex-start">

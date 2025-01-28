@@ -20,7 +20,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isReady) return;
 
-    if (!user?.id && isReady) {
+    if (!user?.user_id && isReady) {
       router.push(routes.entrada.url)
     }
 
@@ -29,7 +29,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, isReady])
 
-  if (!user?.id || user.user_type !== "admin") {
+  if (!user?.user_id || user.user_type !== "admin") {
     return <></>;
   }
 

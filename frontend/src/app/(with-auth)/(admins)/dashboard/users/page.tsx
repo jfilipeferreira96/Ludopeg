@@ -68,7 +68,7 @@ function Users() {
 
       const filters = {
         email: searchTerm ?? null,
-        name: searchTerm ?? null,
+        username: searchTerm ?? null,
         phone: searchTerm ?? null,
       };
 

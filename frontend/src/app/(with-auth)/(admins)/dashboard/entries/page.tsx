@@ -1,12 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Card, Table, Checkbox, Pagination as MantinePagination, Center, Text, Select, Flex, Badge, SimpleGrid, Skeleton, Grid, Group, Tooltip, ActionIcon, rem, Button, TextInput, Box } from "@mantine/core";
-import { getDashboardEntries } from "@/services/dashboard.service";
 import { IconCheck, IconRefresh, IconSearch, IconX } from "@tabler/icons-react";
-import { removeEntry, validateEntry, ValidateProps } from "@/services/acessos.service";
 import { notifications } from "@mantine/notifications";
 import { usePathname } from "next/navigation";
 import QrReader from "@/components/qrcode-reader";
+import { removeEntry, validateEntry, ValidateProps } from "@/services/acessos.service";
 
 function getBadge(validated_by: number | null){
   if (!validated_by)
@@ -54,7 +53,6 @@ function Dashboard() {
 
   const fetchData = async () => {
     setLoading(true);
-    if (!location || !location.value) return;
     
     try {
       const pagination = {
@@ -332,5 +330,3 @@ function Dashboard() {
     </>
   );
 }
-
-export default Dashboard;

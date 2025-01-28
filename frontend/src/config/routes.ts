@@ -18,6 +18,10 @@ export const endpoints = {
   updateUser: `/api/auth/users`,
   deleteUser: `/api/auth/users`,
   updateAccount: `/api/auth/account`,
+  /*################## ACESSOS #############################*/
+  acessosEntryRoute: `/api/acessos/entry`,
+  acessosValidateRoute: `/api/acessos/validate`,
+  updateEntryCountRoute: `/api/acessos/update-entry-count`,
 };
 
 export const routes = {
