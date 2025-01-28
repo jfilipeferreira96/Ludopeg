@@ -5,6 +5,8 @@ import { Container } from "@mantine/core";
 import { useSession } from "@/providers/SessionProvider";
 import { routes } from "@/config/routes";
 import { useEffect, useState } from "react";
+import 'dayjs/locale/pt';
+import { DatesProvider } from '@mantine/dates';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   //checking session
@@ -30,8 +32,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <HeaderMenu />
-      {children}
+      <DatesProvider settings={{ locale: 'pt' }}>
+        <HeaderMenu />
+          {children}
+      </DatesProvider>
     </>
   );
 }

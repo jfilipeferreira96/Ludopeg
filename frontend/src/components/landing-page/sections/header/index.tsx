@@ -173,7 +173,7 @@ export const HeaderMenu = () => {
                   >
                     {computedColorScheme === "light" ? "Modo noturno" : "Modo diurno"}
                   </Menu.Item>
-                  <Menu.Item leftSection={<IconSettings style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}>Configurações da conta</Menu.Item>
+                  <Menu.Item onClick={() => router.push(routes.conta.url)} leftSection={<IconSettings style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}>Configurações da conta</Menu.Item>
                   <Menu.Item leftSection={<IconLogout style={{ width: rem(16), height: rem(16) }} stroke={1.5} />} onClick={logout}>
                     Terminar sessão
                   </Menu.Item>

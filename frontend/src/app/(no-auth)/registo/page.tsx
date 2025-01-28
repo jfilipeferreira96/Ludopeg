@@ -34,7 +34,7 @@ const schema = z.object({
     .string()
     .regex(/^\d{9}$/, { message: "O número de telemóvel deve ter 9 dígitos" })
     .min(1, { message: "O telemóvel é obrigatório" }),
-  birthdate: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, { message: "Data inválida. Use o formato DD-MM-YYYY" }),
+  birthdate: z.union([z.date(), z.undefined()]),
   is_subscribed_to_newsletter: z.boolean(),
   has_fees_paid: z.boolean(),
   fee_expiration_date: z.string().optional(),
@@ -54,7 +54,7 @@ export default function Register() {
       password: "",
       avatar: "",
       phone: "",
-      birthdate: "",
+      birthdate: undefined,
       user_type: "player",
       is_subscribed_to_newsletter: false,
       has_fees_paid: false,
@@ -72,7 +72,9 @@ export default function Register() {
 
   const onSubmitHandler = useCallback(
     async (data: RegisterData) => {
-      try {
+      try
+      {
+        console.log(data)
         const response = await register(data);
         if (response.status) {
           notifications.show({
@@ -122,15 +124,7 @@ export default function Register() {
           <TextInput label="Email" placeholder="you@gmail.com" required {...form.getInputProps("email")} className="specialinput" />
           <PasswordInput label="Palavra-passe" placeholder="A sua palavra-passe" required {...form.getInputProps("password")} className="specialinput" />
 
-          <DatePickerInput
-            label="Data de Nascimento"
-            placeholder="Selecione a sua data de nascimento"
-            {...form.getInputProps("birthdate")}
-            value={form.values.birthdate ? new Date(form.values.birthdate) : null}
-            onChange={(date) => form.setFieldValue("birthdate", date ? date.toISOString().split("T")[0] : "")}
-            valueFormat="DD-MM-YYYY"
-            className="specialinput"
-          />
+          <DatePickerInput label="Data de Nascimento" placeholder="Selecione a sua data de nascimento" {...form.getInputProps("birthdate")} valueFormat="DD-MM-YYYY" className="specialinput" />
 
           <Input.Wrapper label="Telemóvel" required>
             <Input component={ReactInputMask} mask="999999999" placeholder="Insira o seu telemóvel" {...form.getInputProps("phone")} className="specialinput" />

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Theme from "./theme";
+import 'dayjs/locale/pt';
+import { DatesProvider } from '@mantine/dates';
 
 export const metadata: Metadata = {
   title: "Ludonautas",
@@ -11,9 +13,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <Theme>
-          {children}
-        </Theme>
+        <DatesProvider settings={{ locale: 'pt' }}>
+          <Theme>
+            {children}
+          </Theme>
+        </DatesProvider>
       </body>
     </html>
   );
