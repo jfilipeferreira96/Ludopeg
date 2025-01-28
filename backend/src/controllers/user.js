@@ -152,40 +152,6 @@ class UserController {
     }
   }
 
-  static async createAccount(req, res, next) {
-    try {
-      const { email, password, fullname, birthdate, user_type } = req.body;
-
-      if (!email || !password) {
-        return res.status(200).json({ status: false, error: "Bad Request", message: "Email and password are required" });
-      }
-
-      const query = "SELECT * FROM users WHERE email = ?";
-      const { rows } = await db.query(query, [email]);
-
-      if (rows.length > 0) {
-        return res.status(200).json({ error: "Bad Request", message: "Email already used" });
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const insertQuery = "INSERT INTO users (password, email, fullname, birthdate, user_type) VALUES (?, ?, ?, ?, ?, ?)";
-      const newUser = await db.query(insertQuery, [hashedPassword, email, fullname, birthdate, user_type]);
-      const userId = newUser.rows.insertId;
-
-      return res.status(201).json({
-        status: true,
-        user: {
-          id: userId,
-          email: email,
-        },
-      });
-    } catch (ex) {
-      Logger.error("An error occurred during registration.", ex);
-      res.status(500).json({ error: "Internal Server Error", message: ex.message });
-    }
-  }
-
   static async getSingleUser(req, res) {
     try {
       const { id } = req.params;
@@ -236,161 +202,146 @@ class UserController {
   }
 
   static async deleteUser(req, res, next) {
-    const userId = req.params.id;
+  const userId = req.params.id;
 
-    try {
-      // Verificar se o user que faz a requisição é um admin
-      if (req.user.user_type !== "admin") {
-        return res.status(200).json({ status: false, error: "Forbidden", message: "Only admins can delete users" });
-      }
-
-      const deleteQuery = "DELETE FROM users WHERE user_id = ?";
-      const { rows } = await db.query(deleteQuery, [userId]);
-
-      if (rows.length === 0) {
-        return res.status(200).json({ status: false, error: "Not Found", message: "User not found" });
-      }
-
-      return res.status(200).json({
-        status: true,
-        message: "User deleted successfully",
-      });
-    } catch (ex) {
-      Logger.error("An error occurred while deleting user.", ex);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal Server Error", message: ex.message });
+  try {
+    if (req.user.user_type !== "admin") {
+      return res.status(200).json({ status: false, error: "Proibido", message: "Apenas administradores podem eliminar utilizadores" });
     }
+
+    const deleteQuery = "DELETE FROM users WHERE user_id = ?";
+    const { rows } = await db.query(deleteQuery, [userId]);
+
+    if (rows.length === 0) {
+      return res.status(200).json({ status: false, error: "Não Encontrado", message: "Utilizador não encontrado" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Utilizador eliminado com sucesso",
+    });
+  } catch (ex) {
+    Logger.error("Ocorreu um erro ao eliminar o utilizador.", ex);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Erro Interno do Servidor", message: ex.message });
   }
+}
 
   static async updateUser(req, res, next) {
-    const userId = req.params.id;
-    const { email, first_name, last_name, birthdate, user_type = "player", phone } = req.body;
+  const userId = req.params.id;
+  const { email, fullname, birthdate, user_type = "player", phone } = req.body;
 
-    try {
-      if (!req.body) {
-        return res.json({ status: false, error: "Pedido Inválido", message: "O corpo do pedido está em falta" });
-      }
+  try {
+    if (!req.body) {
+      return res.json({ status: false, error: "Pedido Inválido", message: "O corpo do pedido está em falta" });
+    }
 
-      // Verificar se o utilizador que faz a requisição é um administrador
-      if (req.user.user_type !== "admin") {
-        return res.json({ status: false, error: "Proibido", message: "Apenas administradores podem atualizar utilizadores" });
-      }
+    if (req.user.user_type !== "admin") {
+      return res.json({ status: false, error: "Proibido", message: "Apenas administradores podem atualizar utilizadores" });
+    }
 
-      // Verificar se o e-mail já está em uso por outro utilizador
+    const checkEmailQuery = "SELECT * FROM users WHERE email = ? AND user_id != ?";
+    const { rows: emailRows } = await db.query(checkEmailQuery, [email, userId]);
+
+    if (emailRows.length > 0) {
+      return res.json({ status: false, error: "Conflito", message: "O email já está em uso" });
+    }
+
+    const checkUserQuery = "SELECT * FROM users WHERE user_id = ?";
+    const { rows: userRows } = await db.query(checkUserQuery, [userId]);
+
+    if (userRows.length === 0) {
+      return res.json({ status: false, error: "Não Encontrado", message: "Utilizador não encontrado" });
+    }
+
+    const updateQuery = `
+    UPDATE users
+    SET email = ?, fullname = ?, phone = ?, birthdate = ?, user_type = ?
+    WHERE user_id = ?
+  `;
+    const formattedBirthdate = birthdate ? new Date(birthdate).toISOString().slice(0, 19).replace("T", " ") : null;
+    await db.query(updateQuery, [email, fullname, phone, formattedBirthdate, user_type, userId]);
+
+    return res.status(200).json({
+      status: true,
+      user: {
+        email,
+        fullname,
+        phone,
+        birthdate,
+        user_type,
+        id: userId,
+      },
+      message: "Utilizador atualizado com sucesso",
+    });
+  } catch (ex) {
+    Logger.error("Ocorreu um erro ao atualizar o utilizador.", ex);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Erro Interno do Servidor", message: ex.message });
+  }
+}
+
+  static async updateOwnUser(req, res, next) {
+  const userId = req.params.id;
+  const { email, fullname, birthdate, password } = req.body;
+
+  try {
+    if (parseInt(req.user.id) !== parseInt(userId)) {
+      return res.status(200).json({ error: "Permissão Negada", message: "Não tem permissão para atualizar este utilizador" });
+    }
+
+    if (!email && !fullname && !birthdate && !password) {
+      return res.status(200).json({ error: "Pedido Inválido", message: "Nenhum dado novo fornecido para atualização" });
+    }
+
+    if (email) {
       const checkEmailQuery = "SELECT * FROM users WHERE email = ? AND user_id != ?";
       const { rows: emailRows } = await db.query(checkEmailQuery, [email, userId]);
 
       if (emailRows.length > 0) {
-        return res.json({ status: false, error: "Conflito", message: "O email já está em uso" });
+        return res.status(200).json({ error: "Conflito", message: "O email já está em uso por outro utilizador" });
       }
+    }
 
-      // Verificar se o utilizador existe
-      const checkUserQuery = "SELECT * FROM users WHERE user_id = ?";
-      const { rows: userRows } = await db.query(checkUserQuery, [userId]);
+    const updateFields = [];
+    const updateValues = [];
 
-      if (userRows.length === 0) {
-        return res.json({ status: false, error: "Não Encontrado", message: "Utilizador não encontrado" });
-      }
+    if (email) {
+      updateFields.push("email = ?");
+      updateValues.push(email);
+    }
+    if (fullname) {
+      updateFields.push("fullname = ?");
+      updateValues.push(fullname);
+    }
+    if (birthdate) {
+      updateFields.push("birthdate = ?");
+      const formattedBirthdate = new Date(birthdate).toISOString().slice(0, 19).replace("T", " ");
+      updateValues.push(formattedBirthdate);
+    }
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateFields.push("password = ?");
+      updateValues.push(hashedPassword);
+    }
 
-      // Atualizar o utilizador
+    if (updateFields.length > 0) {
+      updateValues.push(userId);
+
       const updateQuery = `
-      UPDATE users
-      SET email = ?, first_name = ?, last_name = ?, phone = ?, birthdate = ?, user_type = ?
-      WHERE user_id = ?
-    `;
-      const formattedBirthdate = birthdate ? new Date(birthdate).toISOString().slice(0, 19).replace("T", " ") : null;
-      await db.query(updateQuery, [email, first_name, last_name, phone, formattedBirthdate, user_type, userId]);
+        UPDATE users
+        SET ${updateFields.join(", ")}
+        WHERE user_id = ?
+      `;
+      await db.query(updateQuery, updateValues);
 
-      return res.status(200).json({
-        status: true,
-        user: {
-          email,
-          first_name,
-          last_name,
-          birthdate,
-          user_type,
-          phone,
-          id: userId,
-        },
-        message: "Utilizador atualizado com sucesso",
-      });
-    } catch (ex) {
-      Logger.error("Ocorreu um erro ao atualizar o utilizador.", ex);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Erro Interno do Servidor", message: ex.message });
+      return res.status(200).json({ status: true, message: "Configurações atualizadas com sucesso" });
+    } else {
+      return res.status(200).json({ error: "Pedido Inválido", message: "Nenhum dado novo fornecido para atualização" });
     }
+  } catch (ex) {
+    Logger.error("Ocorreu um erro ao atualizar as configurações do utilizador.", ex);
+    res.status(200).json({ error: "Erro Interno do Servidor", message: ex.message });
   }
-
-  static async updateOwnUser(req, res, next) {
-    const userId = req.params.id;
-    const { email, first_name, last_name, birthdate, password } = req.body;
-
-    try {
-      // Verificar se o utilizador está tentando atualizar o próprio perfil
-      if (parseInt(req.user.id) !== parseInt(userId)) {
-        return res.status(200).json({ error: "Permissão Negada", message: "Você não tem permissão para atualizar este utilizador" });
-      }
-
-      // Verificar se pelo menos um campo foi fornecido para atualização
-      if (!email && !first_name && !last_name && !birthdate && !password) {
-        return res.status(200).json({ error: "Pedido Inválido", message: "Nenhum dado novo fornecido para atualização" });
-      }
-
-      // Verificar se o e-mail já está em uso por outro utilizador (se fornecido)
-      if (email) {
-        const checkEmailQuery = "SELECT * FROM users WHERE email = ? AND user_id != ?";
-        const { rows: emailRows } = await db.query(checkEmailQuery, [email, userId]);
-
-        if (emailRows.length > 0) {
-          return res.status(200).json({ error: "Conflito", message: "O email já está em uso por outro utilizador" });
-        }
-      }
-
-      // Preparar campos para atualização
-      const updateFields = [];
-      const updateValues = [];
-
-      if (email) {
-        updateFields.push("email = ?");
-        updateValues.push(email);
-      }
-      if (first_name) {
-        updateFields.push("first_name = ?");
-        updateValues.push(first_name);
-      }
-      if (last_name) {
-        updateFields.push("last_name = ?");
-        updateValues.push(last_name);
-      }
-      if (birthdate) {
-        updateFields.push("birthdate = ?");
-        const formattedBirthdate = new Date(birthdate).toISOString().slice(0, 19).replace("T", " ");
-        updateValues.push(formattedBirthdate);
-      }
-      if (password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        updateFields.push("password = ?");
-        updateValues.push(hashedPassword);
-      }
-
-      // Executar a atualização se houver campos para atualizar
-      if (updateFields.length > 0) {
-        updateValues.push(userId); // Adicionar userId ao final dos valores para o WHERE clause
-
-        const updateQuery = `
-          UPDATE users
-          SET ${updateFields.join(", ")}
-          WHERE user_id = ?
-        `;
-        await db.query(updateQuery, updateValues);
-
-        return res.status(200).json({ status: true, message: "Configurações atualizadas com sucesso" });
-      } else {
-        return res.status(200).json({ error: "Pedido Inválido", message: "Nenhum dado novo fornecido para atualização" });
-      }
-    } catch (ex) {
-      Logger.error("Ocorreu um erro ao atualizar as configurações do utilizador.", ex);
-      res.status(200).json({ error: "Erro Interno do Servidor", message: ex.message });
-    }
-  }
+}
 
   static async sendMail(to, subject, text, html) {
     let transporter = nodemailer.createTransport({
