@@ -75,3 +75,14 @@ export const checkToken = async (token: string) => {
     throw error;
   }
 };
+
+export const updateAccount = async (userId: number, data: Partial<User>) => {
+  try
+  {
+    const response = await api.put(`${endpoints.updateAccount}/${userId}`, data);
+    return response.data;
+  } catch (error)
+  {
+    throw error;
+  }
+};

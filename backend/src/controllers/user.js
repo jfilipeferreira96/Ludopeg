@@ -70,7 +70,7 @@ class UserController {
 
   static async register(req, res) {
     try {
-      const { email, password, phone, fullname, avatar, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date } = req.body;
+      const { email, password, phone, fullname, avatar, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date, username } = req.body;
 
       if (!email || !password) {
         return res.status(200).json({
@@ -104,11 +104,30 @@ class UserController {
       const hashedPassword = await bcrypt.hash(password, 10);
       const formattedBirthdate = birthdate ? new Date(birthdate).toISOString().slice(0, 19).replace("T", " ") : null;
 
-      const insertQuery = "INSERT INTO users (email, password, phone, fullname, avatar, birthdate, user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-      const result = await db.query(insertQuery, [email, hashedPassword, phone, fullname, avatar, formattedBirthdate, user_type, is_subscribed_to_newsletter ? 1 : 0, has_fees_paid ? 1 : 0, fee_expiration_date || null]);
+      const insertQuery = `
+        INSERT INTO users (
+          email, username, password, phone, fullname, avatar, birthdate,
+          user_type, is_subscribed_to_newsletter, has_fees_paid, fee_expiration_date
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const result = await db.query(insertQuery, [
+        email,
+        username,
+        hashedPassword,
+        phone || null,
+        fullname,
+        avatar,
+        formattedBirthdate,
+        user_type,
+        is_subscribed_to_newsletter ? 1 : 0,
+        has_fees_paid ? 1 : 0,
+        fee_expiration_date || null,
+      ]);
 
       const newUser = {
         id: result.rows.insertId,
+        username,
         email,
         phone,
         fullname,
