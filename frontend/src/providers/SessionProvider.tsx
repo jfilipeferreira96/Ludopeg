@@ -6,8 +6,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { notifications } from "@mantine/notifications";
 import { User } from "@/types/user";
 
-interface DecodedToken extends JwtPayload {
-  user: User;
+interface DecodedToken extends JwtPayload, User{
   exp: number;
 }
 
@@ -57,7 +56,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
     try {
       const accessToken = localStorage.getItem("accessToken") ?? "";
       const currentDate = new Date();
-
+      
       if (accessToken) {
         const decodedToken = jwt.decode(accessToken) as DecodedToken;
 
@@ -71,10 +70,9 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
           logout(true);
           return;
         }
-
+        
         const userData = {
-          ...decodedToken.user,
-          exp: decodedToken.exp,
+          ...decodedToken,
         };
         
         sessionLogin(userData, accessToken, false);

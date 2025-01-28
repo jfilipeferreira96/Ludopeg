@@ -12,8 +12,9 @@ export interface User {
   fullname: string;
   username: string;
   phone?: string;
-  birthdate: string | Date;
+  birthdate: string | Date | undefined;
   locations?: { location_id: number; location_name: string }[];
   offpeaks?: { offpeak_card_id: number; name: string; valid_until: Date; month: number; year: number }[];
   video_credits?: number;
+  password?: string;
 }

@@ -284,7 +284,7 @@ class UserController {
   const { email, fullname, birthdate, password } = req.body;
 
   try {
-    if (parseInt(req.user.id) !== parseInt(userId)) {
+    if (parseInt(req.user_id) !== parseInt(userId)) {
       return res.status(200).json({ error: "Permissão Negada", message: "Não tem permissão para atualizar este utilizador" });
     }
 

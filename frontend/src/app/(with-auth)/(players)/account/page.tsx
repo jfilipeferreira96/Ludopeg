@@ -1,7 +1,6 @@
 "use client";
 import { routes } from "@/config/routes";
 import { useSession } from "@/providers/SessionProvider";
-import { getUser, updateAccount, UserData } from "@/services/user.service";
 import { TextInput, PasswordInput, Anchor, Paper, Title, Text, Container, Group, Button, Input, Center, Radio, CheckIcon, CheckboxGroup, Loader } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -11,6 +10,8 @@ import styled from "styled-components";
 import { z } from "zod";
 import { DatePickerInput } from "@mantine/dates";
 import "@mantine/dates/styles.css";
+import { getUser, updateAccount } from "@/services/user.service";
+import { User } from "@/types/user";
 
 const StyledPaper = styled(Paper)`
   width: 500px;
@@ -48,7 +49,7 @@ export default function ConfiguracoesConta() {
       }
 
       try {
-        const userData = await getUser(user.id);
+        const userData = await getUser(user.user_id);
 
         form.setValues({
           first_name: userData.first_name,
@@ -70,13 +71,13 @@ export default function ConfiguracoesConta() {
     fetchUser();
   }, [user]);
 
-  const onSubmitHandler = useCallback(async (data: Partial<UserData>) => {
+  const onSubmitHandler = useCallback(async (data: Partial<User>) => {
     if (!data.password) {
       delete data.password;
     }
 
     try {
-      const response = await updateAccount(user.id, data);
+      const response = await updateAccount(user.user_id, data);
 
       if (response.status) {
         updateUser(data as any);

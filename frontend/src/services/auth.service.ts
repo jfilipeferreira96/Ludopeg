@@ -14,7 +14,7 @@ export interface RegisterData {
   password: string; 
   avatar: string; 
   phone?: string; 
-  birthdate?: string; 
+  birthdate?: string | Date | any; 
   user_type: "admin" | "player" | string; 
   is_subscribed_to_newsletter?: boolean;
   has_fees_paid?: boolean; 
@@ -72,17 +72,6 @@ export const checkToken = async (token: string) => {
     const response = await api.get(`${endpoints.checkToken}/${token}`);
     return response.data;
   } catch (error) {
-    throw error;
-  }
-};
-
-export const updateAccount = async (userId: number, data: Partial<User>) => {
-  try
-  {
-    const response = await api.put(`${endpoints.updateAccount}/${userId}`, data);
-    return response.data;
-  } catch (error)
-  {
     throw error;
   }
 };
