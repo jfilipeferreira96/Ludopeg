@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useCallback, useState } from "react";
+
+import { useEffect, useState, useCallback } from "react";
 import { useForm, zodResolver } from "@mantine/form";
 import { DatePickerInput } from "@mantine/dates";
-import { Modal, TextInput, PasswordInput, Button, Group, Radio, CheckIcon, MultiSelect, Input } from "@mantine/core";
+import { Modal, TextInput, Radio, MultiSelect, Input, Button, Group, CheckIcon, Checkbox } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { z } from "zod";
@@ -10,21 +11,23 @@ import { getUser, updateUser } from "@/services/user.service";
 import { useLocation } from "@/providers/LocationProvider";
 import ReactInputMask from "react-input-mask";
 import { User, UserType } from "@/types/user";
+import SetAvatar from "@/components/avatar";
+import ThreeDButton from "@/components/3dbutton";
 
-const schema = z.object({
-  first_name: z.string().min(1, { message: "O primeiro nome é obrigatório" }),
-  last_name: z.string().min(1, { message: "O apelido é obrigatório" }),
-  email: z.string().email({ message: "Endereço de email inválido" }),
-  birthdate: z.union([z.date(), z.undefined()]),
-  user_type: z.enum(["admin", "player"], {
-    required_error: "O tipo de utilizador é obrigatório",
-    invalid_type_error: "Tipo de utilizador inválido",
-  }),
-  phone: z
-    .string()
-    .regex(/^\d{9}$/, { message: "O número de telemóvel deve ter 9 dígitos" })
-    .min(1, { message: "O telemóvel é obrigatório" }),
-});
+const schema = z
+  .object({
+    fullname: z.string().min(2, { message: "O nome completo deve ter pelo menos 2 letras" }),
+    username: z.string().min(2, { message: "O nome de utilizador deve ter pelo menos 2 letras" }),
+    email: z.string().email({ message: "Endereço de email inválido" }),
+    phone: z.string().regex(/^\d{9}$/, { message: "O número de telemóvel deve ter 9 dígitos" }),
+    avatar: z.string().min(4, { message: "Por favor, selecione um avatar" }),
+    birthdate: z.union([z.date(), z.undefined(), z.string()]),
+    user_type: z.enum(["admin", "player"], {
+      required_error: "O tipo de utilizador é obrigatório",
+      invalid_type_error: "Tipo de utilizador inválido",
+    }),
+    is_subscribed_to_newsletter: z.boolean(),
+  });
 
 interface Props {
   isModalOpen: boolean;
@@ -36,9 +39,10 @@ interface Props {
 export default function EditUserModal({ isModalOpen, setIsModalOpen, userId, fetchData }: Props) {
   const [opened, { open, close }] = useDisclosure(false);
   const { location, setLocation, availableLocations } = useLocation();
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [selectedLocations, setSelectedLocations] = useState<string[] | undefined>([]);
   const [locs, setLocs] = useState<Location[] | any>([]);
-  
+
   useEffect(() => {
     if (isModalOpen && userId) {
       fetchUserData(userId);
@@ -61,12 +65,14 @@ export default function EditUserModal({ isModalOpen, setIsModalOpen, userId, fet
 
   const form = useForm({
     initialValues: {
-      first_name: "",
-      last_name: "",
+      fullname: "",
+      username: "",
       email: "",
       phone: "",
       birthdate: undefined,
       user_type: UserType.ADMIN,
+      is_subscribed_to_newsletter: false,
+      avatar: "",
     },
     validate: zodResolver(schema),
   });
@@ -76,30 +82,17 @@ export default function EditUserModal({ isModalOpen, setIsModalOpen, userId, fet
 
     try {
       const userData: User = await getUser(userId);
-      
+      const date = userData.birthdate ? new Date(userData.birthdate) : "";
+
       form.setValues({
-        fullname: userData.fullname,
-        email: userData.email,
-        birthdate: userData.birthdate ? new Date(userData.birthdate) : (undefined as any),
-        user_type: userData.user_type,
-        phone: userData.phone,
+        fullname: userData.fullname || "",
+        username: userData.username || "",
+        email: userData.email || "",
+        phone: userData.phone || "",
+        birthdate: date as any,
+        user_type: userData.user_type || UserType.PLAYER,
+        is_subscribed_to_newsletter: userData.is_subscribed_to_newsletter || false,
       });
-
-      // Verificar se userData.locations está definido
-      if (userData.locations && userData.locations.length > 0) {
-        const data: any = userData.locations;
-        const selectedLocationNames = data.map((loc:any) => loc.location_name);
-        const selectedLocationOptions = data.map((loc: any) => ({
-          label: loc.location_name,
-          value: loc.location_id,
-        }));
-
-        setSelectedLocations(selectedLocationNames);
-        setLocs(selectedLocationOptions);
-      } else {
-        setSelectedLocations([]);
-        setLocs([]);
-      }
     } catch (error) {
       notifications.show({
         title: "Erro",
@@ -113,24 +106,23 @@ export default function EditUserModal({ isModalOpen, setIsModalOpen, userId, fet
     if (values === null) {
       return;
     }
-
     setSelectedLocations(values);
     const selectedLocationObjects = values.map((value) => availableLocations.find((loc) => loc.label === value));
     setLocs(selectedLocationObjects);
   };
 
-
   const onSubmitHandler = useCallback(
     async (data: Partial<User>) => {
       try {
         if (!userId) return;
-        const sendData = { ...data, locations: locs };
+        const sendData = { ...data, locations: locs, avatar: selectedAvatar };
+
         const response = await updateUser(userId, sendData);
 
         if (response.status) {
           notifications.show({
             title: "Sucesso",
-            message: "",
+            message: "Utilizador atualizado com sucesso!",
             color: "green",
           });
 
@@ -138,7 +130,7 @@ export default function EditUserModal({ isModalOpen, setIsModalOpen, userId, fet
         } else {
           notifications.show({
             title: "Erro",
-            message: response.message,
+            message: response.message || "Erro ao atualizar os dados",
             color: "red",
           });
         }
@@ -150,24 +142,19 @@ export default function EditUserModal({ isModalOpen, setIsModalOpen, userId, fet
         });
       }
     },
-    [userId, selectedLocations, locs]
+    [userId, selectedAvatar, locs]
   );
 
   return (
     <Modal opened={opened} onClose={close} title="Editar Utilizador" size="lg">
       <form onSubmit={form.onSubmit((values) => onSubmitHandler(values))}>
-        <TextInput className="specialinput" label="Primeiro Nome" placeholder="Insira o seu primeiro nome" required {...form.getInputProps("first_name")} mb={"sm"} />
-
-        <TextInput className="specialinput" label="Último Nome" placeholder="Insira o seu último nome" required {...form.getInputProps("last_name")} mb={"sm"} />
-
-        <DatePickerInput label="Data de Nascimento" placeholder="Selecione a sua data de nascimento" {...form.getInputProps("birthdate")} valueFormat="DD-MM-YYYY" className="specialinput" mb={"sm"} />
-
+        <TextInput className="specialinput" label="Nome Completo" placeholder="Insira o seu nome completo" required {...form.getInputProps("fullname")} mb={"sm"} />
+        <TextInput className="specialinput" label="Nome de Utilizador" placeholder="Insira o seu nome de utilizador" required {...form.getInputProps("username")} mb={"sm"} />
+        <TextInput className="specialinput" label="Email" placeholder="exemplo@gmail.com" required {...form.getInputProps("email")} mb={"sm"} />
         <Input.Wrapper label="Telemóvel" required>
           <Input component={ReactInputMask} mask="999999999" placeholder="Insira o seu telemóvel" {...form.getInputProps("phone")} />
         </Input.Wrapper>
-
-        <TextInput className="specialinput" label="Email" placeholder="exemplo@gmail.com" required {...form.getInputProps("email")} mb={"sm"} />
-
+        <DatePickerInput label="Data de Nascimento" placeholder="Selecione a sua data de nascimento" {...form.getInputProps("birthdate")} valueFormat="DD-MM-YYYY" className="specialinput" mb={"sm"} />
         <Radio.Group name="user_type" label="Tipo de Utilizador" withAsterisk {...form.getInputProps("user_type")} required mb={"sm"}>
           <Group mt="xs" defaultValue={UserType.ADMIN}>
             <Radio value={UserType.ADMIN} label={UserType.ADMIN} icon={CheckIcon} style={{ textTransform: "capitalize" }} />
@@ -175,22 +162,11 @@ export default function EditUserModal({ isModalOpen, setIsModalOpen, userId, fet
           </Group>
         </Radio.Group>
 
-        {form.values.user_type === UserType.ADMIN && (
-          <MultiSelect
-            label="Localizações disponíveis"
-            placeholder="Selecione uma ou mais localizações"
-            data={availableLocations.map((loc) => loc.label)}
-            value={selectedLocations}
-            onChange={handleLocationChange}
-            clearable
-            mb={"sm"}
-            required
-          />
-        )}
+        <Checkbox mt={"md"} label="Subscrever newsletter" {...form.getInputProps("is_subscribed_to_newsletter", { type: "checkbox" })} />
 
-        <Button fullWidth mt="lg" type="submit">
-          Editar
-        </Button>
+        <ThreeDButton color="blue" mt="xl" type="submit" smaller>
+          Atualizar Utilizador
+        </ThreeDButton>
       </form>
     </Modal>
   );

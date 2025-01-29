@@ -22,6 +22,12 @@ export const endpoints = {
   acessosEntryRoute: `/api/acessos/entry`,
   acessosValidateRoute: `/api/acessos/validate`,
   updateEntryCountRoute: `/api/acessos/update-entry-count`,
+  /*################## Noticias #############################*/
+  addNews: `/api/news/add`,
+  getAllNews: `/api/news/all`,
+  getNews: `/api/news`,
+  updateNews: `/api/news`,
+  deleteNews: `/api/news`,
 };
 
 export const routes = {

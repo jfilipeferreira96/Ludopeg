@@ -5,9 +5,11 @@ export enum UserType {
 }
 
 export interface User {
-  id: string;
+  is_subscribed_to_newsletter: boolean;
+  created_at?: string | number | Date;
+  user_id: string | number;
   email: string;
-  user_type: UserType | string;
+  user_type: UserType | any;
   fullname: string;
   username: string;
   phone?: string;

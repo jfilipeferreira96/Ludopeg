@@ -55,7 +55,48 @@ CREATE TABLE IF NOT EXISTS news (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Inserções corrigidas
+CREATE TABLE IF NOT EXISTS tournaments (
+    tournament_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    location_id INT,
+    created_by INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS matches (
+    match_id INT AUTO_INCREMENT PRIMARY KEY,
+    tournament_id INT NOT NULL,
+    player1_id INT NOT NULL,
+    player2_id INT NOT NULL,
+    match_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    location_id INT DEFAULT NULL,
+    winner_id INT DEFAULT NULL,
+    score VARCHAR(20) DEFAULT NULL, -- Exemplo: '6-3, 4-6, 7-5'
+    status ENUM('scheduled', 'in_progress', 'completed') DEFAULT 'scheduled',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tournament_id) REFERENCES tournaments(tournament_id) ON DELETE CASCADE,
+    FOREIGN KEY (player1_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (player2_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (winner_id) REFERENCES users(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS tournament_players (
+    tournament_id INT NOT NULL,
+    user_id INT NOT NULL,
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    PRIMARY KEY (tournament_id, user_id),
+    FOREIGN KEY (tournament_id) REFERENCES tournaments(tournament_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+
+-- Inserções
 
 INSERT INTO locations (name, address, city, country, href, created_at) 
 VALUES 

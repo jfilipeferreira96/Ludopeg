@@ -1,17 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Card, Table, Checkbox, Pagination as MantinePagination, Center, Text, Select, Flex, Badge, SimpleGrid, Skeleton, Grid, Tooltip, ActionIcon, rem, Group, Button, Modal, TextInput } from "@mantine/core";
-import { deleteUser, getAllUsers } from "@/services/user.service";
+import { deleteUser, Filters, getAllUsers } from "@/services/user.service";
 import { IconBrandZoom, IconCards, IconEye, IconGift, IconPencil, IconPlus, IconSearch, IconSticker, IconTrash } from "@tabler/icons-react";
-import AddUserModal from "@/components/user-modal/add";
 import { useDisclosure } from "@mantine/hooks";
 import EditUserModal from "@/components/user-modal/edit";
 import { notifications } from "@mantine/notifications";
 import { usePathname } from "next/navigation";
-import AsignOffpeakModal from "@/components/user-modal/assign-offpick";
-import CarimbosModal from "@/components/user-modal/carimbos-modal";
-import ModalVoucher from "@/components/user-modal/modal-voucher";
-import VideosModal from "@/components/user-modal/videos-modal";
+import { User } from "@/types/user";
 
 function getBadge(user_type: string){
   if (user_type === 'admin')
@@ -23,17 +19,6 @@ function getBadge(user_type: string){
   }
 }
 
-interface Elemento {
-  user_id: number;
-  email: string;
-  first_name: string;
-  last_name: string;
-  phone: string;
-  birthdate: string;
-  user_type: string;
-  created_at: string;
-}
-
 function Users() {
   const pathname = usePathname();
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
@@ -42,15 +27,11 @@ function Users() {
     const storedValue = localStorage.getItem(pathname);
     return storedValue ? parseInt(storedValue) : 10;
   });
-  const [elementos, setElementos] = useState<Elemento[]>([]);
+  const [elementos, setElementos] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [totalElements, setTotalElements] = useState<number>(0);
-  const [isModalOpenAdd, setIsModalOpenAdd] = useState<boolean>(false);
   const [isModalOpenEdit, setIsModalOpenEdit] = useState<boolean>(false);
-  const [isModalOpenOffpeak, setIsModalOpenOffpeak] = useState<boolean>(false);
-  const [isModalOpenCarimbos, setIsModalOpenCarimbos] = useState<boolean>(false);
-  const [isModalOpenVouchers, setIsModalOpenVouchers] = useState<boolean>(false);
-  const [isModalOpenVideoCredits, setIsModalOpenVideoCredits] = useState<boolean>(false);
+
   const [editUserId, setEditUserId] = useState<number | null>(null);
   const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
@@ -66,9 +47,10 @@ function Users() {
         order: 'DESC'
       }
 
-      const filters = {
+      const filters: Filters = {
         email: searchTerm ?? null,
         username: searchTerm ?? null,
+        fullname: searchTerm ?? null,
         phone: searchTerm ?? null,
       };
 
@@ -103,25 +85,6 @@ function Users() {
     setIsModalOpenEdit(true);
   };
 
-  const handleOffpeak = (userId: number) =>{
-    setEditUserId(userId);
-    setIsModalOpenOffpeak(true);
-  };
-
-  const handleCarimbos = (userId: number) => {
-    setEditUserId(userId);
-    setIsModalOpenCarimbos(true);
-  };
-
-  const handleVouchers = (userId: number) => {
-    setEditUserId(userId);
-    setIsModalOpenVouchers(true);
-  };
-  
-   const handleVideoCredits = (userId: number) => {
-     setEditUserId(userId);
-     setIsModalOpenVideoCredits(true);
-  };
   
   const handleElementsPerPageChange = (value: string | null) => {
 
@@ -141,26 +104,26 @@ function Users() {
    };
 
   const rows = elementos?.map((element) => (
-    <Table.Tr key={element.user_id} bg={selectedRows.includes(element.user_id) ? "var(--mantine-color-blue-light)" : undefined}>
+    <Table.Tr key={Number(element.user_id)} bg={selectedRows.includes(Number(element.user_id)) ? "var(--mantine-color-blue-light)" : undefined}>
       <Table.Td>
         <Badge variant="filled" size="md" fw={700} color={getBadge(element.user_type).color} style={{ minWidth: "110px" }}>
           {getBadge(element.user_type).name}
         </Badge>
       </Table.Td>
-      <Table.Td>
-        {element.first_name} {element.last_name}
-      </Table.Td>
+      <Table.Td>{element.username}</Table.Td>
+      <Table.Td>{element.fullname}</Table.Td>
       <Table.Td>{element.email}</Table.Td>
       <Table.Td>{element?.phone ? element?.phone : "-"}</Table.Td>
-      <Table.Td>{new Date(element.created_at).toLocaleString()}</Table.Td>
+      <Table.Td>{element.created_at && new Date(element.created_at).toLocaleString()}</Table.Td>
       <Table.Td>
-        <Group gap={0} justify="center">
+        <Group gap={4} justify="center">
           <Tooltip label={"Apagar Utilizador"} withArrow position="top">
             <ActionIcon
-              variant="filled" className="action-icon-size"
+              variant="filled"
+              className="action-icon-size"
               color="red"
               onClick={() => {
-                setDeleteUserId(element.user_id);
+                setDeleteUserId(Number(element.user_id));
                 open();
               }}
             >
@@ -169,32 +132,8 @@ function Users() {
           </Tooltip>
 
           <Tooltip label={"Editar Perfil"} withArrow position="top">
-            <ActionIcon variant="filled" className="action-icon-size" onClick={() => handleEditCleak(element.user_id)}>
+            <ActionIcon variant="filled" className="action-icon-size" onClick={() => handleEditCleak(Number(element.user_id))}>
               <IconPencil size={20} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
-
-          <Tooltip label={"Ver/Atribuir Offpeaks"} withArrow position="top">
-            <ActionIcon color="green" variant="filled" className="action-icon-size" onClick={() => handleOffpeak(element.user_id)}>
-              <IconCards size={20} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
-          
-          <Tooltip label={"Ver/Editar Carimbos"} withArrow position="top">
-            <ActionIcon color="yellow" variant="filled" className="action-icon-size" onClick={() => handleCarimbos(element.user_id)}>
-              <IconSticker size={20} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
-
-          <Tooltip label={"Ver/Editar Vouchers"} withArrow position="top">
-            <ActionIcon color="orange" variant="filled" className="action-icon-size" onClick={() => handleVouchers(element.user_id)}>
-              <IconGift size={20} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
-
-          <Tooltip label={"Atribuir Créditos"} withArrow position="top">
-            <ActionIcon color="gray" variant="filled" className="action-icon-size" onClick={() => handleVideoCredits(element.user_id)}>
-              <IconBrandZoom size={20} stroke={1.5} />
             </ActionIcon>
           </Tooltip>
         </Group>
@@ -205,15 +144,8 @@ function Users() {
   return (
     <>
       <h1>Utilizadores do Sistema</h1>
-      <AddUserModal isModalOpen={isModalOpenAdd} setIsModalOpen={setIsModalOpenAdd} fetchData={fetchData} />
+
       <EditUserModal isModalOpen={isModalOpenEdit} setIsModalOpen={setIsModalOpenEdit} fetchData={fetchData} userId={editUserId} />
-      <AsignOffpeakModal isModalOpen={isModalOpenOffpeak} setIsModalOpen={setIsModalOpenOffpeak} fetchData={fetchData} userId={editUserId} />
-
-      <CarimbosModal isModalOpen={isModalOpenCarimbos} setIsModalOpen={setIsModalOpenCarimbos} fetchData={fetchData} userId={editUserId} />
-
-      <ModalVoucher isModalOpen={isModalOpenVouchers} setIsModalOpen={setIsModalOpenVouchers} fetchData={fetchData} userId={editUserId} />
-
-      <VideosModal isModalOpen={isModalOpenVideoCredits} setIsModalOpen={setIsModalOpenVideoCredits} fetchData={fetchData} userId={editUserId} />
 
       <Modal opened={opened} onClose={close} withCloseButton={false}>
         <Center>
@@ -281,17 +213,6 @@ function Users() {
             />
             <Text>entradas</Text>
           </Flex>
-
-          <Button
-            variant="light"
-            color="green"
-            rightSection={<IconPlus size={18} />}
-            onClick={() => {
-              setIsModalOpenAdd(true);
-            }}
-          >
-            Adicionar utilizador
-          </Button>
         </Group>
 
         <Table.ScrollContainer minWidth={500}>
@@ -299,6 +220,7 @@ function Users() {
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>Tipo de Utilizador</Table.Th>
+                <Table.Th>Utilizador</Table.Th>
                 <Table.Th>Nome</Table.Th>
                 <Table.Th>Email</Table.Th>
                 <Table.Th>Telemóvel</Table.Th>
@@ -313,7 +235,7 @@ function Users() {
         {elementos.length > 0 && (
           <Flex justify={"space-between"} mt={"lg"}>
             <Text>
-              A mostrar {initialIndex + 1} a {Math.min(finalIndex, totalElements)} de {totalElements} elementos
+              A mostrar {initialIndex + 1} a {Math.min(finalIndex, totalElements)} de {totalElements} utilizadores
             </Text>
             <MantinePagination total={Math.ceil(totalElements / elementsPerPage)} onChange={handlePageChange} />
           </Flex>
