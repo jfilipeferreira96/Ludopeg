@@ -5,6 +5,10 @@
   display: flex;
   flex-direction: column;
   background-color: var(--mantine-color-blue-filled);
+
+  @media (max-width: 769px) {
+    width: 100vw;
+  }
 }
 
 .navbarMain { 

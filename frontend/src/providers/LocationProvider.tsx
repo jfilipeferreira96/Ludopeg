@@ -35,7 +35,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
   };
 
   useEffect(() => {
-    if (user && user.user_type === "admin") {
+    /* if (user && user.user_type === "admin") {
       let storedLocation: Location | null = null;
       const storedLocationStr = localStorage.getItem("last_location");
       if (storedLocationStr) {
@@ -57,7 +57,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
         }
 
       }
-    }
+    } */
   }, [user]);
 
   return <LocationContext.Provider value={{ location, setLocation, availableLocations, setAvailableLocations }}>{children}</LocationContext.Provider>;

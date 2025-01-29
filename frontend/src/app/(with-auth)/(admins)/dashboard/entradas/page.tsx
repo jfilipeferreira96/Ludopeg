@@ -34,7 +34,7 @@ interface Elemento {
   phone: string;
 }
 
-function Dashboard() {
+function Entradas() {
   const pathname = usePathname();
   const [selectedRows, setSelectedRows] = useState<Elemento[]>([]);
   const [activePage, setActivePage] = useState<number>(1);
@@ -330,3 +330,5 @@ function Dashboard() {
     </>
   );
 }
+
+export default Entradas;

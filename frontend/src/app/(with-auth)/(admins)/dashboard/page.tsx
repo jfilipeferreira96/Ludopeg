@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     if (user) {
       if (user.user_type === "admin") {
-        router.push(routes.dashboard.entries);
+        router.push(routes.dashboard.entradas);
         return;
       }
 

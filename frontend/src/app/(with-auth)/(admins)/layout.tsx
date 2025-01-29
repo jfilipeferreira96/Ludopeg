@@ -34,13 +34,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <DatesProvider settings={{ locale: 'pt' }}> {/* Configura a localidade para PT-PT */}
-      <AppShell header={{ height: 70, collapsed: isSmallScreen ? false : true }} navbar={{ width: 300, breakpoint: "sm", collapsed: { mobile: !opened } }} padding="md">
+    <DatesProvider settings={{ locale: 'pt' }}>
+      <AppShell
+        header={{
+          height: 70, //isSmallScreen && opened ? 0 : 70
+          collapsed: isSmallScreen ? false : true
+        }}
+        navbar={{ width: 300, breakpoint: "sm", collapsed: { mobile: !opened } }}
+        padding="md"
+      >
         <AppShell.Header>
           <AdminHeader opened={opened} toggle={toggle} />
         </AppShell.Header>
         <AppShell.Navbar>
-          <NavbarSimpleColored close={close} />
+          <NavbarSimpleColored close={close} toggle={toggle} />
         </AppShell.Navbar>
         <AppShell.Main mb={40}>{children}</AppShell.Main>
       </AppShell>
