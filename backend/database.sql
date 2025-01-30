@@ -95,6 +95,15 @@ CREATE TABLE IF NOT EXISTS tournament_players (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS entries (
+    entry_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    entry_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    validated_by INT,
+    validated_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (validated_by) REFERENCES users(user_id) ON DELETE SET NULL
+);
 
 -- Inserções
 

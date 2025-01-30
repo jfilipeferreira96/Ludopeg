@@ -6,6 +6,7 @@ import { notifications } from "@mantine/notifications";
 import { usePathname } from "next/navigation";
 import QrReader from "@/components/qrcode-reader";
 import { removeEntry, validateEntry, ValidateProps } from "@/services/acessos.service";
+import { getDashboardEntries } from "@/services/dashboard.service";
 
 function getBadge(validated_by: number | null){
   if (!validated_by)
@@ -26,11 +27,10 @@ interface Elemento {
   validated_by: number | null;
   validated_at: string | null;
   user_email: string;
-  user_first_name: string;
-  user_last_name: string;
+  user_fullname: string;
+  user_username: string;
   admin_email: string;
-  admin_first_name: string;
-  admin_last_name: string;
+  admin_fullname: string;
   phone: string;
 }
 
@@ -64,7 +64,7 @@ function Entradas() {
 
       let filters: any = {
         email: searchTerm?.trim() ?? null,
-        name: searchTerm?.trim() ?? null,
+        username: searchTerm?.trim() ?? null,
         phone: searchTerm?.trim() ?? null,
       };
 
@@ -74,7 +74,7 @@ function Entradas() {
         filters.validated_by = false;
       }
 
-      const response = await getDashboardEntries(pagination, location.value, filters);
+      const response = await getDashboardEntries(pagination, filters);
 
       if (response) {
         setElementos(response.data);
@@ -209,15 +209,17 @@ function Entradas() {
         </Badge>
       </Table.Td>
       <Table.Td>
-        {element.user_first_name} {element.user_last_name}
+        {element.user_username}
+      </Table.Td>
+      <Table.Td>
+        {element.user_fullname}
       </Table.Td>
       <Table.Td>{element.user_email}</Table.Td>
       <Table.Td>{element?.phone ? element?.phone : "-"}</Table.Td>
-      <Table.Td>{element.location_name}</Table.Td>
-      <Table.Td>{element.validated_at ? `${element.admin_first_name} ${element.admin_last_name}` : "-"}</Table.Td>
+      <Table.Td>{element.validated_at ? `${element.admin_fullname}` : "-"}</Table.Td>
       <Table.Td>{new Date(element.entry_time).toLocaleString()}</Table.Td>
       <Table.Td>
-        <Group gap={0} justify="center">
+        <Group gap={4} justify="center">
           {element.validated_at ? (
             <>-</>
           ) : (
@@ -257,7 +259,7 @@ function Entradas() {
             size="md"
             value={searchTerm}
             onChange={handleSearch}
-            placeholder="Pesquisar por nome, email ou telemóvel"
+            placeholder="Pesquisar por username, email ou telemóvel"
             rightSectionWidth={42}
             leftSection={<IconSearch style={{ width: rem(18), height: rem(18) }} stroke={1.5} />}
             mb={"lg"}
@@ -305,10 +307,10 @@ function Entradas() {
               <Table.Tr>
                 <Table.Th />
                 <Table.Th>Estado</Table.Th>
+                <Table.Th>Username</Table.Th>
                 <Table.Th>Nome</Table.Th>
                 <Table.Th>Email</Table.Th>
                 <Table.Th>Telemóvel</Table.Th>
-                <Table.Th>Local</Table.Th>
                 <Table.Th>Validador</Table.Th>
                 <Table.Th>Data</Table.Th>
                 <Table.Th>Ações</Table.Th>

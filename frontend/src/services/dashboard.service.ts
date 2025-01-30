@@ -1,50 +1,13 @@
 import api from "@/config/api";
 import { endpoints } from "@/config/routes";
 import { Filters } from "./user.service";
+import { Pagination } from "@/types/pagination";
 
-/* export const getDashboardEntries = async (pagination: Pagination, location: number, filters: Filters) => {
+export const getDashboardEntries = async (pagination: Pagination, filters: Filters) => {
   try {
-    const response = await api.post(endpoints.dashboardEntriesRoute, { pagination: pagination, location: location, filters });
+    const response = await api.post(endpoints.dashboardEntriesRoute, { pagination: pagination, filters });
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-
-export const getDashboardCards = async (pagination: Pagination) => {
-  try
-  {
-    const response = await api.post(endpoints.dashboardCardsRoute, { pagination: pagination });
-    return response.data;
-  } catch (error)
-  {
-    throw error;
-  }
-};
-
-export const getConfig = async () => {
-  try {
-    const response = await api.get(endpoints.configRoute);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const updateConfig = async (configData: any): Promise<{ status: string; message?: string }> => {
-  try {
-    const response = await api.post(endpoints.configRoute, configData);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const createUserCardCarimbos = async (id: string) => {
-  try {
-    const response = await api.get(`${endpoints.manuallyCreateCard}/${id}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}; */

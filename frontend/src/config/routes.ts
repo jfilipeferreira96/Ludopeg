@@ -28,6 +28,8 @@ export const endpoints = {
   getNews: `/api/news`,
   updateNews: `/api/news`,
   deleteNews: `/api/news`,
+  /*################## Dashboard #############################*/
+  dashboardEntriesRoute: `/api/dashboard/entries`,
 };
 
 export const routes = {

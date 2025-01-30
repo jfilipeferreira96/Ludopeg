@@ -3,8 +3,8 @@ import { endpoints } from "@/config/routes";
 
 interface RegisterEntriesProps {
   userEmail?: string;
+  userName?: string;
   userPhone?: string;
-  locationId: number;
 }
 
 export interface ValidateProps {
