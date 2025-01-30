@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     fullname VARCHAR(255),
     phone VARCHAR(15) DEFAULT NULL UNIQUE,
     birthdate DATE,
-    user_type ENUM('admin', 'player') DEFAULT 'player' NOT NULL,
+    user_type ENUM('admin', 'jogador') DEFAULT 'jogador' NOT NULL,
     is_subscribed_to_newsletter TINYINT(1) DEFAULT 0,
     has_fees_paid TINYINT(1) DEFAULT 0,
     fee_expiration_date DATE DEFAULT NULL,

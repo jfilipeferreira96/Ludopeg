@@ -1,6 +1,6 @@
 
 export enum UserType {
-  PLAYER = "Jogador",
+  JOGADOR = "Jogador",
   ADMIN = "Admin",
 }
 
