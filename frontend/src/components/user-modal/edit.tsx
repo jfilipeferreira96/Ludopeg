@@ -34,7 +34,7 @@ export default function EditUserModal({ isModalOpen, setIsModalOpen, userId, fet
 {
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedUserType, setSelectedUserType] = useState<UserType>(UserType.JOGADOR);
-  console.log(selectedUserType)
+  
   useEffect(() =>
   {
     if (isModalOpen && userId)
