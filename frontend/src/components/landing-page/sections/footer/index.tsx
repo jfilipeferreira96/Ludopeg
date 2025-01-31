@@ -8,7 +8,7 @@ import { routes } from "@/config/routes";
 
 const links = [
   { label: "Contactos", link: routes.contactos.url },
-  { label: "Newsletter", link: routes.newsletter.url },
+  /* { label: "Newsletter", link: routes.newsletter.url }, */
 ];
 
 const Footer = () => {
