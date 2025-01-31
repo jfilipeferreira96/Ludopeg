@@ -4,7 +4,7 @@ import { NewsData, NewsResponse } from "@/types/noticias";
 import { Pagination } from "@/types/pagination";
 
 export const addNews = async (newsData: NewsData, files: File[]) => {
-  try {
+  /* try {
     const formData = new FormData();
     Object.keys(newsData).forEach((key) => {
       formData.append(key, newsData[key as keyof NewsData]);
@@ -21,7 +21,7 @@ export const addNews = async (newsData: NewsData, files: File[]) => {
     return response.data;
   } catch (error) {
     throw error;
-  }
+  } */
 };
 
 export const getAllNews = async (pagination: Pagination) => {

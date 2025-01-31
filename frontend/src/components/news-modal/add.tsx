@@ -4,11 +4,12 @@ import { notifications } from "@mantine/notifications";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import { useDisclosure } from "@mantine/hooks";
-import { addNews, NewsData } from "@/services/news.service";
+import { addNews } from "@/services/news.service";
 import { IconFile } from "@tabler/icons-react";
 import { DateInput } from "@mantine/dates";
 import "@mantine/dates/styles.css";
 import dayjs from "dayjs"; 
+import { NewsData } from "@/types/noticias";
 
 const schema = z.object({
   title: z.string().min(1, { message: "O título é obrigatório" }),
@@ -66,7 +67,7 @@ export default function AddNewsModal(props: Props) {
           date: dayjs(data.date).format("YYYY-MM-DD")
         };
 
-        const response = await addNews(payload);
+        /* const response = await addNews(payload);
         if (response.status) {
           notifications.show({
             title: "Sucesso",
@@ -80,7 +81,7 @@ export default function AddNewsModal(props: Props) {
             message: response.message,
             color: "red",
           });
-        }
+        } */
       } catch (error) {
         notifications.show({
           title: "Erro",
@@ -95,7 +96,7 @@ export default function AddNewsModal(props: Props) {
   return (
     <Modal opened={opened} onClose={close} title="Adicionar Produto" size="lg">
       <>
-        <form onSubmit={form.onSubmit((values) => onSubmitHandler(values))}>
+        <form /* onSubmit={form.onSubmit((values) => onSubmitHandler(values))} */>
           <TextInput label="Título" placeholder="Insira o título" required {...form.getInputProps("title")} mb={"sm"} />
 
           <FileInput

@@ -70,7 +70,7 @@ const NewsTable = () => {
                   <Table.Td>{article.date}</Table.Td>
                   <Table.Td>
                     <Tooltip label="Apagar Notícias">
-                      <ActionIcon color="red" onClick={() => { setDeleteNewsId(article.id); open(); }}>
+                      <ActionIcon color="red" onClick={() => { /* setDeleteNewsId(article.id); */ open(); }}>
                         <IconTrash size={20} />
                       </ActionIcon>
                     </Tooltip>
